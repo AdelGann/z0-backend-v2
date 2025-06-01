@@ -22,7 +22,7 @@ enum PaymentType {
 }
 
 enum Money {
-  Bs_
+  Bs
   Dls
   Eur
 }
@@ -34,120 +34,111 @@ enum InvitationState {
 }
 
 model client_feedbacks {
-  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  client_id  String    @db.Uuid
-  org_id     String    @db.Uuid
+  id         String    @id @unique @default(uuid())
+  client_id  String    @unique
+  org_id     String    @unique
   rating     BigInt
   comment    String
-  created_at DateTime? @db.Timestamptz(6)
+  created_at DateTime? @default(now())
   clients    clients   @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_clients_feedbacks")
   orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_feedbacks")
 }
 
 model clients {
-  id               String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  org_id           String             @db.Uuid
+  id               String             @id @unique @default(uuid())
+  org_id           String             @unique
   doc_num          String             @unique(map: "uni_clients_doc_num")
   full_name        String             @unique(map: "uni_clients_full_name")
-  created_at       DateTime?          @db.Timestamptz(6)
-  updated_at       DateTime?          @db.Timestamptz(6)
-  deleted_at       DateTime?          @db.Timestamptz(6)
+  created_at       DateTime?          @default(now())
+  update_at        DateTime?          @updatedAt
   client_feedbacks client_feedbacks[]
   orgs             orgs               @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_clients")
   orders           orders[]
-
-  @@index([deleted_at], map: "idx_clients_deleted_at")
 }
 
 model debt_types {
-  id    String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id    String @id @unique @default(uuid())
   name  String @unique(map: "uni_debt_types_name") @db.VarChar(50)
   debts debts?
 }
 
 model debts {
-  id           String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id           String      @id @unique @default(uuid())
   debt_type    String      @db.VarChar(20)
   payment_type PaymentType
   money_type   Money
-  amount       Decimal?    @db.Decimal
-  created_at   DateTime?   @db.Timestamptz(6)
-  debt_type_id String      @unique(map: "uni_debts_debt_type_id") @db.Uuid
-  org_id       String      @db.Uuid
+  amount       Float?
+  created_at   DateTime?   @default(now())
+  debt_type_id String      @unique(map: "uni_debts_debt_type_id")
+  org_id       String      @unique
   debt_types   debt_types  @relation(fields: [debt_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_debts_debt_type")
   orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_debts")
 }
 
 model employees {
-  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  org_id     String    @db.Uuid
-  user_id    String    @db.Uuid
+  id         String    @id @unique @default(uuid())
+  org_id     String    @unique
+  user_id    String    @unique
   doc_num    String?   @unique(map: "uni_employees_doc_num")
   role       Roles     @default(USER)
-  created_at DateTime? @db.Timestamptz(6)
-  updated_at DateTime? @db.Timestamptz(6)
-  deleted_at DateTime? @db.Timestamptz(6)
+  created_at DateTime? @default(now())
+  update_at  DateTime? @updatedAt
   orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_employees")
   users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_employees")
-
-  @@index([deleted_at], map: "idx_employees_deleted_at")
 }
 
 model income_types {
-  id      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id      String   @id @unique @default(uuid())
   name    String   @unique(map: "uni_income_types_name") @db.VarChar(50)
   incomes incomes?
 }
 
 model incomes {
-  id             String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id             String       @id @unique @default(uuid())
   income_type    String       @db.VarChar(20)
   payment_type   PaymentType
   money_type     Money
-  amount         Decimal?     @db.Decimal
-  created_at     DateTime?    @db.Timestamptz(6)
-  income_type_id String       @unique(map: "uni_incomes_income_type_id") @db.Uuid
-  org_id         String       @db.Uuid
+  amount         Float?
+  created_at     DateTime?    @default(now())
+  income_type_id String       @unique(map: "uni_incomes_income_type_id")
+  org_id         String       @unique
   income_types   income_types @relation(fields: [income_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_incomes_income_type")
   orgs           orgs         @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_incomes")
 }
 
 model metrics {
-  id           String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id           String @id @unique @default(uuid())
   month        BigInt
   year         BigInt
-  total_income Decimal @default(0) @db.Decimal
-  total_debts  Decimal @default(0) @db.Decimal
-  income_count BigInt  @default(0)
-  debt_count   BigInt  @default(0)
-  org_id       String  @unique(map: "uni_metrics_org_id") @db.Uuid
-  orgs         orgs    @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_metrics")
+  total_income Float  @default(0)
+  total_debts  Float  @default(0)
+  income_count BigInt @default(0)
+  debt_count   BigInt @default(0)
+  org_id       String @unique(map: "uni_metrics_org_id")
+  orgs         orgs   @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_metrics")
 }
 
 model orders {
-  id           String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  org_id       String      @db.Uuid
-  client_id    String      @db.Uuid
-  total_amount Decimal?    @db.Decimal
+  id           String      @id @unique @default(uuid())
+  org_id       String      @unique
+  client_id    String      @unique
+  total_amount Float?
   payment_type PaymentType
   money_type   Money
-  created_at   DateTime?   @db.Timestamptz(6)
-  updated_at   DateTime?   @db.Timestamptz(6)
-  deleted_at   DateTime?   @db.Timestamptz(6)
+  created_at   DateTime?   @default(now())
+  update_at    DateTime?   @updatedAt
   clients      clients     @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_orders_client")
   orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_orders_org")
   products     products[]
-
-  @@index([deleted_at], map: "idx_orders_deleted_at")
 }
 
 model org_invitations {
-  id         String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  user_id    String          @db.Uuid
-  org_id     String          @db.Uuid
+  id         String          @id @unique @default(uuid())
+  user_id    String          @unique
+  org_id     String          @unique
   code       String
-  created_at DateTime?       @db.Timestamptz(6)
-  updated_at DateTime?       @db.Timestamptz(6)
+  created_at DateTime?       @default(now())
+  update_at  DateTime?       @updatedAt
   state      InvitationState @default(PENDING)
   orgs       orgs            @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_invitations")
   users      users           @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_invitations")
@@ -157,12 +148,11 @@ model org_invitations {
 }
 
 model orgs {
-  id               String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  founder_id       String             @db.Uuid
+  id               String             @id @unique @default(uuid())
+  founder_id       String             @unique
   name             String
-  created_at       DateTime?          @db.Timestamptz(6)
-  updated_at       DateTime?          @db.Timestamptz(6)
-  deleted_at       DateTime?          @db.Timestamptz(6)
+  created_at       DateTime?          @default(now())
+  update_at        DateTime?          @updatedAt
   client_feedbacks client_feedbacks[]
   clients          clients[]
   debts            debts[]
@@ -173,24 +163,20 @@ model orgs {
   org_invitations  org_invitations[]
   users            users              @relation(fields: [founder_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_organizations")
   products         products[]
-
-  @@index([deleted_at], map: "idx_orgs_deleted_at")
 }
 
 model products {
-  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  org_id     String    @db.Uuid
+  id         String    @id @unique @default(uuid())
+  org_id     String    @unique
   name       String
   quantity   BigInt?
-  price      Decimal?  @db.Decimal
-  created_at DateTime? @db.Timestamptz(6)
-  updated_at DateTime? @db.Timestamptz(6)
-  deleted_at DateTime? @db.Timestamptz(6)
-  order_id   String    @db.Uuid
-  orders     orders    @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_products")
-  orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_products")
+  price      Float?
+  created_at DateTime? @default(now())
+  update_at  DateTime? @updatedAt
 
-  @@index([deleted_at], map: "idx_products_deleted_at")
+  order_id String @unique
+  orders   orders @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_products")
+  orgs     orgs   @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_products")
 }
 
 model schema_migrations {
@@ -199,18 +185,15 @@ model schema_migrations {
 }
 
 model users {
-  id              String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String            @id @unique @default(uuid())
   full_name       String
   user_name       String            @unique(map: "uni_users_user_name")
   email           String            @unique(map: "uni_users_email")
   password        String
-  created_at      DateTime?         @db.Timestamptz(6)
-  updated_at      DateTime?         @db.Timestamptz(6)
-  deleted_at      DateTime?         @db.Timestamptz(6)
+  created_at      DateTime?         @default(now())
+  update_at       DateTime?         @updatedAt
   role            Roles             @default(USER)
   employees       employees[]
   org_invitations org_invitations[]
   orgs            orgs[]
-
-  @@index([deleted_at], map: "idx_users_deleted_at")
 }
