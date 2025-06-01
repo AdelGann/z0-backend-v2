@@ -47,8 +47,8 @@ model client_feedbacks {
 model clients {
   id               String             @id @unique @default(uuid())
   org_id           String             @unique
-  doc_num          String             @unique(map: "uni_clients_doc_num")
-  full_name        String             @unique(map: "uni_clients_full_name")
+  doc_num          String             @unique()
+  full_name        String             @unique()
   created_at       DateTime?          @default(now())
   update_at        DateTime?          @updatedAt
   client_feedbacks client_feedbacks[]
@@ -58,7 +58,7 @@ model clients {
 
 model debt_types {
   id    String @id @unique @default(uuid())
-  name  String @unique(map: "uni_debt_types_name") @db.VarChar(50)
+  name  String @unique() @db.VarChar(50)
   debts debts?
 }
 
@@ -69,7 +69,7 @@ model debts {
   money_type   Money
   amount       Float?
   created_at   DateTime?   @default(now())
-  debt_type_id String      @unique(map: "uni_debts_debt_type_id")
+  debt_type_id String      @unique()
   org_id       String      @unique
   debt_types   debt_types  @relation(fields: [debt_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_debts_debt_type")
   orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_debts")
@@ -79,7 +79,7 @@ model employees {
   id         String    @id @unique @default(uuid())
   org_id     String    @unique
   user_id    String    @unique
-  doc_num    String?   @unique(map: "uni_employees_doc_num")
+  doc_num    String?   @unique()
   role       Roles     @default(USER)
   created_at DateTime? @default(now())
   update_at  DateTime? @updatedAt
@@ -89,7 +89,7 @@ model employees {
 
 model income_types {
   id      String   @id @unique @default(uuid())
-  name    String   @unique(map: "uni_income_types_name") @db.VarChar(50)
+  name    String   @unique() @db.VarChar(50)
   incomes incomes?
 }
 
@@ -100,7 +100,7 @@ model incomes {
   money_type     Money
   amount         Float?
   created_at     DateTime?    @default(now())
-  income_type_id String       @unique(map: "uni_incomes_income_type_id")
+  income_type_id String       @unique()
   org_id         String       @unique
   income_types   income_types @relation(fields: [income_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_incomes_income_type")
   orgs           orgs         @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_incomes")
@@ -114,7 +114,7 @@ model metrics {
   total_debts  Float  @default(0)
   income_count BigInt @default(0)
   debt_count   BigInt @default(0)
-  org_id       String @unique(map: "uni_metrics_org_id")
+  org_id       String @unique()
   orgs         orgs   @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_metrics")
 }
 
@@ -187,8 +187,8 @@ model schema_migrations {
 model users {
   id              String            @id @unique @default(uuid())
   full_name       String
-  user_name       String            @unique(map: "uni_users_user_name")
-  email           String            @unique(map: "uni_users_email")
+  user_name       String            @unique()
+  email           String            @unique()
   password        String
   created_at      DateTime?         @default(now())
   update_at       DateTime?         @updatedAt
