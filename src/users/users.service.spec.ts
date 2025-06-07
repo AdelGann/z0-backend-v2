@@ -317,9 +317,14 @@ describe('UsersService', () => {
         jest.spyOn(service, 'getByEmail').mockResolvedValue(admin_result);
         jest.spyOn(service, 'getByUserName').mockResolvedValue(null);
 
-        await expect(service.update(result.id, body)).rejects.toThrow(
-          new BadRequestException('Email already exist'),
-        );
+        const bodyWithExistingEmail = {
+          ...body,
+          email: admin_result.email,
+        };
+
+        await expect(
+          service.update(result.id, bodyWithExistingEmail),
+        ).rejects.toThrow(new BadRequestException('Email already exist'));
       });
 
       it('should throw BadRequest if username already exists', async () => {
@@ -327,15 +332,14 @@ describe('UsersService', () => {
         jest.spyOn(service, 'getByEmail').mockResolvedValue(null);
         jest.spyOn(service, 'getByUserName').mockResolvedValue(admin_result);
 
-        const body = {
-          email: 'new_email@gmail.com',
-          full_name: 'John Doe',
-          user_name: 'existing_username',
+        const bodyWithExistingUsername = {
+          ...body,
+          user_name: admin_result.user_name,
         };
 
-        await expect(service.update(result.id, body)).rejects.toThrow(
-          new BadRequestException('Email already exist'),
-        );
+        await expect(
+          service.update(result.id, bodyWithExistingUsername),
+        ).rejects.toThrow(new BadRequestException('Email already exist'));
       });
     });
     describe('Update User Password Function', () => {

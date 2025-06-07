@@ -56,3 +56,11 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 /generated/prisma
+
+# package locks
+./package-lock.json
+
+# Nest configuration
+./prettierrc
+./eslint.config.mjs
+./nest-cli.json
