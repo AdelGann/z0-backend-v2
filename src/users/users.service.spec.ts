@@ -398,7 +398,28 @@ describe('UsersService', () => {
     it('should be defined', () => {
       expect(typeof service.delete).toBe('function');
     });
-    it('should delete an user', () => {});
+
+    it('should delete an user', async () => {
+      jest.spyOn(service, 'getById').mockResolvedValue(result);
+      const deleteSpy = jest
+        .spyOn(dbService.users, 'delete')
+        .mockResolvedValue(result);
+
+      const user = await service.delete(result.id);
+
+      expect(deleteSpy).toHaveBeenCalledWith({
+        where: { id: result.id },
+      });
+      expect(user).toEqual(result);
+    });
+
+    it('should throw BadRequest if user does not exist', async () => {
+      jest.spyOn(service, 'getById').mockResolvedValue(null);
+
+      await expect(service.delete(result.id)).rejects.toThrow(
+        new BadRequestException('User not founded'),
+      );
+    });
   });
 });
 
