@@ -14,6 +14,9 @@ const dbMock = {
     findUnique: jest.fn(),
     findMany: jest.fn(),
   },
+  orgs: {
+    create: jest.fn(),
+  },
 };
 
 describe('UsersService', () => {
@@ -53,13 +56,30 @@ describe('UsersService', () => {
         const createSpy = jest
           .spyOn(dbService.users, 'create')
           .mockResolvedValue(result);
+        const orgSpy = jest.spyOn(dbService.orgs, 'create').mockResolvedValue({
+          name: `${mocked_data.user_name} Org`,
+          founder_id: result.id,
+          id: uuidv4(),
+          created_at: new Date(),
+          update_at: new Date(),
+        });
 
         const user = await service.create(mocked_data);
 
         expect(createSpy).toHaveBeenCalledWith({
           data: {
             ...mocked_data,
-            user_name: mocked_data.user_name,
+            role: Roles.USER,
+          },
+          omit: {
+            password: true,
+          },
+        });
+
+        expect(orgSpy).toHaveBeenCalledWith({
+          data: {
+            name: `${mocked_data.user_name} Org`,
+            founder_id: result.id,
           },
         });
         expect(user).toEqual(result);
@@ -78,6 +98,9 @@ describe('UsersService', () => {
           where: {
             user_name: mocked_data.user_name,
           },
+          omit: {
+            password: true,
+          },
         });
       });
       it('should throw BadRequest if Email already exists', async () => {
@@ -94,6 +117,9 @@ describe('UsersService', () => {
           where: {
             email: mocked_data.email,
           },
+          omit: {
+            password: true,
+          },
         });
       });
     });
@@ -107,11 +133,29 @@ describe('UsersService', () => {
         const createSpy = jest
           .spyOn(dbService.users, 'create')
           .mockResolvedValue(admin_result);
-
-        const user = await service.create(mocked_data);
+        const orgSpy = jest.spyOn(dbService.orgs, 'create').mockResolvedValue({
+          name: `${mocked_data.user_name} Org`,
+          founder_id: result.id,
+          id: uuidv4(),
+          created_at: new Date(),
+          update_at: new Date(),
+        });
+        const user = await service.createAdmin(mocked_data);
 
         expect(createSpy).toHaveBeenCalledWith({
-          data: mocked_data,
+          data: {
+            ...mocked_data,
+            role: Roles.ADMIN,
+          },
+          omit: {
+            password: true,
+          },
+        });
+        expect(orgSpy).toHaveBeenCalledWith({
+          data: {
+            name: `${mocked_data.user_name} Org`,
+            founder_id: result.id,
+          },
         });
         expect(user).toEqual(admin_result);
         expect(user.role).toEqual(Roles.ADMIN);
@@ -121,13 +165,16 @@ describe('UsersService', () => {
           .spyOn(dbService.users, 'findUnique')
           .mockResolvedValue(admin_result);
 
-        await expect(service.create(mocked_data)).rejects.toThrow(
+        await expect(service.createAdmin(mocked_data)).rejects.toThrow(
           new BadRequestException('Username already taked'),
         );
 
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: {
             user_name: mocked_data.user_name,
+          },
+          omit: {
+            password: true,
           },
         });
       });
@@ -137,13 +184,16 @@ describe('UsersService', () => {
           .mockResolvedValueOnce(null)
           .mockResolvedValueOnce(admin_result);
 
-        await expect(service.create(mocked_data)).rejects.toThrow(
+        await expect(service.createAdmin(mocked_data)).rejects.toThrow(
           new BadRequestException('Email already taked'),
         );
 
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: {
             email: mocked_data.email,
+          },
+          omit: {
+            password: true,
           },
         });
       });
@@ -163,6 +213,9 @@ describe('UsersService', () => {
 
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: { id: result.id },
+          omit: {
+            password: true,
+          },
         });
         expect(user).toEqual(result);
       });
@@ -176,6 +229,9 @@ describe('UsersService', () => {
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: {
             id: result.id,
+          },
+          omit: {
+            password: true,
           },
         });
         expect(user).toEqual(null);
@@ -194,6 +250,9 @@ describe('UsersService', () => {
 
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: { email: result.email },
+          omit: {
+            password: true,
+          },
         });
         expect(user).toEqual(result);
       });
@@ -202,11 +261,14 @@ describe('UsersService', () => {
           .spyOn(dbService.users, 'findUnique')
           .mockResolvedValue(null);
 
-        const user = await service.getById(result.email);
+        const user = await service.getByEmail(result.email);
 
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: {
             email: result.email,
+          },
+          omit: {
+            password: true,
           },
         });
         expect(user).toEqual(null);
@@ -225,19 +287,25 @@ describe('UsersService', () => {
 
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: { user_name: result.user_name },
+          omit: {
+            password: true,
+          },
         });
         expect(user).toEqual(result);
       });
-      it('should return nothing if doesnt exist email', async () => {
+      it('should return nothing if doesnt exist username', async () => {
         const findUniqueSpy = jest
           .spyOn(dbService.users, 'findUnique')
           .mockResolvedValue(null);
 
-        const user = await service.getById(result.user_name);
+        const user = await service.getByUserName(result.user_name);
 
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: {
             user_name: result.user_name,
+          },
+          omit: {
+            password: true,
           },
         });
         expect(user).toEqual(null);
@@ -254,7 +322,11 @@ describe('UsersService', () => {
 
         const users = await service.getAll();
 
-        expect(findManySpy).toHaveBeenCalled();
+        expect(findManySpy).toHaveBeenCalledWith({
+          omit: {
+            password: true,
+          },
+        });
         expect(users).toEqual([result, admin_result]);
       });
       it("should return an empty array if doesn't have any data", async () => {
@@ -264,7 +336,11 @@ describe('UsersService', () => {
 
         const users = await service.getAll();
 
-        expect(findManySpy).toHaveBeenCalled();
+        expect(findManySpy).toHaveBeenCalledWith({
+          omit: {
+            password: true,
+          },
+        });
         expect(users).toEqual([]);
       });
     });
@@ -297,6 +373,9 @@ describe('UsersService', () => {
         expect(updateSpy).toHaveBeenCalledWith({
           where: { id: result.id },
           data: body,
+          omit: {
+            password: true,
+          },
         });
         expect(user).toEqual({
           ...result,
@@ -347,7 +426,11 @@ describe('UsersService', () => {
         expect(typeof service.updatePassword).toBe('function');
       });
       it('should update an user password', async () => {
-        jest.spyOn(service, 'getById').mockResolvedValue(result);
+        const fullUserData = { ...result, password: 'old_password' };
+        jest
+          .spyOn(dbService.users, 'findUnique')
+          .mockResolvedValue(fullUserData);
+
         const new_password = 'new_password';
         const body = {
           password: new_password,
@@ -362,8 +445,15 @@ describe('UsersService', () => {
         const user = await service.updatePassword(result.id, body);
 
         expect(updateSpy).toHaveBeenCalledWith({
-          where: { id: result.id },
-          data: { password: new_password },
+          where: {
+            id: result.id,
+          },
+          data: {
+            password: new_password,
+          },
+          omit: {
+            password: true,
+          },
         });
         expect(user).toEqual({
           ...result,
@@ -371,7 +461,7 @@ describe('UsersService', () => {
         });
       });
       it('should throw BadRequest if user not found', async () => {
-        jest.spyOn(service, 'getById').mockResolvedValue(null);
+        jest.spyOn(dbService.users, 'findUnique').mockResolvedValue(null);
         const body = {
           password: 'new_password',
         };
@@ -381,9 +471,13 @@ describe('UsersService', () => {
         );
       });
       it('should throw BadRequest if new password is same as current', async () => {
-        jest.spyOn(service, 'getById').mockResolvedValue(result);
+        const fullUserData = { ...result, password: 'same_password' };
+        jest
+          .spyOn(dbService.users, 'findUnique')
+          .mockResolvedValue(fullUserData);
+
         const body = {
-          password: result.password,
+          password: 'same_password',
         };
 
         await expect(service.updatePassword(result.id, body)).rejects.toThrow(
