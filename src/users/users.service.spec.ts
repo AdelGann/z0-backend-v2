@@ -117,9 +117,6 @@ describe('UsersService', () => {
           where: {
             email: mocked_data.email,
           },
-          omit: {
-            password: true,
-          },
         });
       });
     });
@@ -192,9 +189,7 @@ describe('UsersService', () => {
           where: {
             email: mocked_data.email,
           },
-          omit: {
-            password: true,
-          },
+        
         });
       });
     });
@@ -250,9 +245,6 @@ describe('UsersService', () => {
 
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: { email: result.email },
-          omit: {
-            password: true,
-          },
         });
         expect(user).toEqual(result);
       });
@@ -266,9 +258,6 @@ describe('UsersService', () => {
         expect(findUniqueSpy).toHaveBeenCalledWith({
           where: {
             email: result.email,
-          },
-          omit: {
-            password: true,
           },
         });
         expect(user).toEqual(null);

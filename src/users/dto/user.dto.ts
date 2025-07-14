@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import { IsString, IsEmail, MinLength, IsStrongPassword } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -31,6 +30,7 @@ export class CreateUserDto {
     example: 'Password123!',
   })
   @IsString()
+  @IsStrongPassword()
   @MinLength(8)
   password!: string;
 }

@@ -1,0 +1,29 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsStrongPassword, IsString } from 'class-validator';
+import { CreateUserDto } from 'src/users/dto/user.dto';
+
+export class LoginDto {
+  @ApiProperty({
+    description: 'User Email',
+    example: 'john@example.com',
+  })
+  @IsEmail({})
+  email!: string;
+
+  @ApiProperty({
+    description: 'User Password',
+    example: 'Strong_Password@15025',
+  })
+  @IsString()
+  @IsStrongPassword()
+  password!: string;
+}
+export class RegisterDto extends CreateUserDto {
+  @ApiProperty({
+    description: 'Validate Password',
+    example: 'Strong_Password@15025',
+  })
+  @IsStrongPassword()
+  @IsString()
+  repeat_password!: string;
+}

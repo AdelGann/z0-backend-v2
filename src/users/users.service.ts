@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DbService } from '../common/db/db.service';
-import { Roles } from '../../generated/prisma';
+import { Roles, users } from '../../generated/prisma';
 import {
   CreateUserDto,
   UpdatePasswordDto,
@@ -29,13 +29,10 @@ export class UsersService {
     });
   }
 
-  async getByEmail(email: string): Promise<user_response | null> {
+  async getByEmail(email: string): Promise<users | null> {
     return this.db.users.findUnique({
       where: {
         email,
-      },
-      omit: {
-        password: true,
       },
     });
   }
