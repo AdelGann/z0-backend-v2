@@ -15,7 +15,6 @@ export class LoginDto {
     example: 'Strong_Password@15025',
   })
   @IsString()
-  @IsStrongPassword()
   password!: string;
 }
 export class RegisterDto extends CreateUserDto {
