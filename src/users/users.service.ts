@@ -167,6 +167,11 @@ export class UsersService {
     if (user === null) {
       throw new BadRequestException('User not founded');
     }
+    await this.db.orgs.deleteMany({
+      where: {
+        founder_id: user.id,
+      },
+    });
     await this.db.users.delete({
       where: { id: user.id },
     });
