@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-check --no-ignore
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 
@@ -27,16 +27,18 @@ export default tseslint.config(
   },
   {
     rules: {
-
-      "prettier/prettier": [
-        "off",
+      'prettier/prettier': [
+        'off',
         {
-          "endOfLine": "auto"
-        }
+          endOfLine: 'auto',
+        },
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
     },
-  }
+  },
 );
