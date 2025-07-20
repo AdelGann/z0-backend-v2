@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
@@ -17,6 +18,9 @@ import {
 } from './dto/user.dto';
 import { UsersService } from './users.service';
 import { user_response } from 'src/interfaces/user.interface';
+import { Auth, AuthRoles, CurrentUser } from '../auth/decorators';
+import { token_payload } from '../auth/interfaces/Token_Payload.interface';
+import { Roles } from 'generated/prisma';
 
 @ApiTags('users')
 @Controller('users')
@@ -36,6 +40,7 @@ export class UsersController {
   }
 
   @Get()
+  @AuthRoles(Roles.ADMIN)
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({
     status: 200,
@@ -47,6 +52,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Auth()
   @ApiOperation({ summary: 'Get a user by id' })
   @ApiResponse({
     status: 200,
@@ -54,11 +60,16 @@ export class UsersController {
     type: CreateUserDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async findOne(@Param('id') id: string): Promise<user_response | null> {
+  async findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: token_payload,
+  ): Promise<user_response | null> {
+    console.log('Usuario autenticado:', user);
     return await this.service.getById(id);
   }
 
   @Patch(':id')
+  @AuthRoles(Roles.ADMIN, Roles.USER)
   @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({
     status: 200,
@@ -86,11 +97,13 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @AuthRoles(Roles.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 204, description: 'User successfully deleted' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string, @CurrentUser() user: token_payload) {
+    console.log('Usuario que ejecuta la eliminación:', user);
     return this.service.delete(id);
   }
 }

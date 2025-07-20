@@ -5,6 +5,7 @@ import { DbService } from '../common/db/db.service';
 
 @Module({
   providers: [UsersService, DbService],
-  controllers: [UsersController]
+  controllers: [UsersController],
+  exports: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}
