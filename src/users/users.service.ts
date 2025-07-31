@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DbService } from '../common/db/db.service';
+import { OrgService } from 'src/org/org.service';
 import { Roles, users } from '../../generated/prisma';
 import {
   CreateUserDto,
@@ -10,8 +11,13 @@ import { user_response } from 'src/interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly db: DbService) {}
+  constructor(
+    private readonly db: DbService,
+    private readonly orgService: OrgService,
+  ) {}
 
+  // SOLO ADMINISTRADOR
+  // Es más, ¿Es seguro que solo el administrador tenga accesos a estos datos?
   private async getFullUserData(id: string) {
     return this.db.users.findUnique({
       where: { id },
@@ -74,12 +80,12 @@ export class UsersService {
         password: true,
       },
     });
-    await this.db.orgs.create({
-      data: {
+    await this.orgService.create(
+      {
         name: `${user.user_name} Org`,
-        founder_id: newUser.id,
       },
-    });
+      newUser.id,
+    );
     return newUser;
   }
 
@@ -101,12 +107,12 @@ export class UsersService {
         password: true,
       },
     });
-    await this.db.orgs.create({
-      data: {
+    await this.orgService.create(
+      {
         name: `${user.user_name} Org`,
-        founder_id: newUser.id,
       },
-    });
+      newUser.id,
+    );
     return newUser;
   }
 
@@ -161,7 +167,8 @@ export class UsersService {
       },
     });
   }
-
+  // TODO: Rehacer logica de eliminación de usuarios
+  // Falta alterar el esquema de prisma para admitir estados en lugar de eliminar físicamente
   async delete(id: string): Promise<user_response> {
     const user = await this.getById(id);
     if (user === null) {

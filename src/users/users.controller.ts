@@ -4,11 +4,9 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   HttpCode,
   HttpStatus,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
@@ -40,6 +38,7 @@ export class UsersController {
   }
 
   @Get()
+  @Auth()
   @AuthRoles(Roles.ADMIN)
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({
@@ -51,7 +50,7 @@ export class UsersController {
     return await this.service.getAll();
   }
 
-  @Get(':id')
+  @Get('by-id')
   @Auth()
   @ApiOperation({ summary: 'Get a user by id' })
   @ApiResponse({
@@ -61,15 +60,12 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   async findOne(
-    @Param('id') id: string,
     @CurrentUser() user: token_payload,
   ): Promise<user_response | null> {
-    console.log('Usuario autenticado:', user);
-    return await this.service.getById(id);
+    return await this.service.getById(user.sub);
   }
 
-  @Patch(':id')
-  @AuthRoles(Roles.ADMIN, Roles.USER)
+  @Patch()
   @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({
     status: 200,
@@ -77,11 +73,14 @@ export class UsersController {
     type: UpdateUserDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.service.update(id, updateUserDto);
+  update(
+    @CurrentUser() user: token_payload,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.service.update(user.sub, updateUserDto);
   }
 
-  @Patch('password/:id')
+  @Patch('restore-password')
   @ApiOperation({ summary: 'Update user password' })
   @ApiResponse({
     status: 200,
@@ -90,20 +89,18 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   updatePassword(
-    @Param('id') id: string,
+    @CurrentUser() user: token_payload,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    return this.service.updatePassword(id, updatePasswordDto);
+    return this.service.updatePassword(user.sub, updatePasswordDto);
   }
 
-  @Delete(':id')
-  @AuthRoles(Roles.ADMIN)
+  @Delete('delete-account')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 204, description: 'User successfully deleted' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  remove(@Param('id') id: string, @CurrentUser() user: token_payload) {
-    console.log('Usuario que ejecuta la eliminación:', user);
-    return this.service.delete(id);
+  remove(@CurrentUser() user: token_payload) {
+    return this.service.delete(user.sub);
   }
 }
