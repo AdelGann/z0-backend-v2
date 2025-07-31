@@ -7,12 +7,6 @@ import { UsersService } from 'src/users/users.service';
 import { Request } from 'express';
 import { token_payload } from '../interfaces/Token_Payload.interface';
 
-interface RequestWithConnection extends Request {
-  connectionParams?: {
-    Authorization: string;
-  };
-}
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -21,18 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: RequestWithConnection): string | null => {
-          if (request?.connectionParams?.Authorization) {
-            const auth = request.connectionParams.Authorization;
-            return auth.startsWith('Bearer ') ? auth.slice(7) : auth;
-          }
+        (request: Request): string | null => {
           if (request?.headers?.authorization) {
             const auth = request.headers.authorization;
             return auth.startsWith('Bearer ') ? auth.slice(7) : auth;
-          }
-          if (request?.cookies?.token) {
-            const token: string = request.cookies.token;
-            return token;
           }
           return null;
         },
