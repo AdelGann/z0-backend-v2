@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -9,8 +9,7 @@ import { token_payload } from '../interfaces/Token_Payload.interface';
 
 interface RequestWithConnection extends Request {
   connectionParams?: {
-    Authorization: any;
-    authorization?: string;
+    Authorization: string;
   };
 }
 
@@ -22,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: RequestWithConnection) => {
+        (request: RequestWithConnection): string | null => {
           if (request?.connectionParams?.Authorization) {
             const auth = request.connectionParams.Authorization;
             return auth.startsWith('Bearer ') ? auth.slice(7) : auth;
@@ -32,7 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             return auth.startsWith('Bearer ') ? auth.slice(7) : auth;
           }
           if (request?.cookies?.token) {
-            return request.cookies.token;
+            const token: string = request.cookies.token;
+            return token;
           }
           return null;
         },
