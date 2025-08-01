@@ -1,24 +1,37 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
-import { DbService } from 'src/common/db/db.service';
-import { EmployeesService } from 'src/employees/employees.service';
-import { CreateOrgDto, UpdateOrgDto } from './dto/org.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { DbService } from '../common/db/db.service';
+import { EmployeesService } from '../employees/employees.service';
+import { CreateOrgDto, SelectOrgDto, UpdateOrgDto } from './dto/org.dto';
 
 @Injectable()
 export class OrgService {
+  // FUNFACT: Fuese GoLang y esto se daña por importar funciones en orden cerrado
   constructor(
     private readonly dbService: DbService,
-    private readonly usersService: UsersService,
     private readonly employeesService: EmployeesService,
   ) {}
 
   //NOTE: Solo para apartado administrador
   async getAll() {
     return this.dbService.orgs.findMany();
+  }
+  // NOTE: esto en teoria será para cuando se vaya a iniciar sesión
+  // Entonces el usuario podrá elegir entre organizaciones
+  async getAllOrgByUser(user_id: string): Promise<SelectOrgDto[]> {
+    return this.dbService.orgs.findMany({
+      where: {
+        employees: {
+          some: {
+            user_id,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
   }
 
   //NOTE: 30/07
@@ -34,7 +47,9 @@ export class OrgService {
   }
 
   async create(org: CreateOrgDto, founder_id: string) {
-    const user = await this.usersService.getById(founder_id);
+    const user = await this.dbService.users.findUnique({
+      where: { id: founder_id },
+    });
     if (user === null) {
       throw new NotFoundException('User not founded');
     }
@@ -55,14 +70,14 @@ export class OrgService {
 
   // NOTE: SOLO administradores de la organización
   // Debería agregar el ID de la organización en el DTO?
-  async update(updateOrg: UpdateOrgDto, founder_id: string) {
-    const user = await this.usersService.getById(founder_id);
+  async update(updateOrg: UpdateOrgDto) {
+    //const user = await this.usersService.getById(founder_id);
     const org = await this.dbService.orgs.findUnique({
       where: { id: updateOrg.id },
     });
-    if (user === null) {
-      throw new NotFoundException('User not founded');
-    }
+    //if (user === null) {
+    //  throw new NotFoundException('User not founded');
+    //}
     if (org === null) {
       throw new NotFoundException('Organization not founded');
     }
@@ -70,11 +85,12 @@ export class OrgService {
     //TODO: falta validar usuarios empleados que tengan permisos para modificar
     //?: Aunque no es necesario que más de una persona pueda modificar la organización.
     //Evaluar
-    if (org.founder_id !== user.id) {
-      throw new ForbiddenException(
-        'You are not the founder of this organization',
-      );
-    }
+    //FIX: Removeré esta condición, debido a que se agrega un decorador que valida roles, no es necesario esto
+    //if (org.founder_id !== user.id) {
+    //  throw new ForbiddenException(
+    //    'You are not the founder of this organization',
+    //  );
+    //}
     return this.dbService.orgs.update({
       where: { id: org.id },
       data: {

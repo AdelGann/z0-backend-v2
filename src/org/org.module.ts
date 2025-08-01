@@ -1,11 +1,13 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { OrgService } from './org.service';
 import { OrgController } from './org.controller';
-import { DbService } from 'src/common/db/db.service';
+import { EmployeesModule } from '../employees/employees.module';
+import { DbModule } from '../common/db/db.module';
 
 @Module({
-  providers: [OrgService, DbService],
+  providers: [OrgService],
   controllers: [OrgController],
   exports: [OrgService],
+  imports: [DbModule, EmployeesModule],
 })
 export class OrgModule {}

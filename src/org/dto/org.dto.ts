@@ -12,6 +12,7 @@ export class CreateOrgDto {
   @MinLength(6)
   name!: string;
 }
+
 export class UpdateOrgDto extends CreateOrgDto {
   @ApiProperty({
     description: 'Organization ID',
@@ -20,3 +21,5 @@ export class UpdateOrgDto extends CreateOrgDto {
   @IsString()
   id!: string;
 }
+
+export class SelectOrgDto extends UpdateOrgDto {}

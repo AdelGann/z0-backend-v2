@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DbService } from '../common/db/db.service';
-import { OrgService } from 'src/org/org.service';
+import { OrgService } from '../org/org.service';
 import { Roles, users } from '../../generated/prisma';
 import {
   CreateUserDto,
   UpdatePasswordDto,
   UpdateUserDto,
 } from './dto/user.dto';
-import { user_response } from 'src/interfaces/user.interface';
+import { user_response } from '../interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
