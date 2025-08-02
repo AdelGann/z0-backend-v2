@@ -13,13 +13,25 @@ async function bootstrap() {
     .setTitle('Z0 - Api docs')
     .setDescription('Documentación de la API del sistema contable')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Ingrese su token JWT',
+      },
+      'bearer', // nombre del esquema o id que usarás para referenciarlo
+    )
     .addTag('users', 'Endpoints relacionados con usuarios')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
-
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      // Esto asegura que Swagger "use" el esquema para todas las operaciones por defecto
+      security: [{ bearer: [] }],
+    },
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();

@@ -1,5 +1,10 @@
 import { Controller, Delete, Get, Patch, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { EmployeesService } from './employees.service';
 import { Auth, CurrentUser } from '../auth/decorators';
 import { ValidateMember } from './decorators/member.decorator';
@@ -11,6 +16,7 @@ import { MemberRoles } from './decorators/role.decorator';
 @ValidateMember()
 @ApiTags('employees')
 @Controller('employees')
+@ApiBearerAuth()
 export class EmployeesController {
   constructor(private readonly memberService: EmployeesService) {}
 
@@ -19,7 +25,7 @@ export class EmployeesController {
   @ApiResponse({ status: 200, description: 'List of all employees' })
   @ApiResponse({ status: 404, description: 'Employees not founded' })
   @ApiResponse({ status: 401, description: 'Forbbiden' })
-  getAll(@Query() org_id: string) {
+  getAll(@Query('org_id') org_id: string) {
     return this.memberService.getAll(org_id);
   }
 

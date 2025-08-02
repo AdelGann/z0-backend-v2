@@ -1,14 +1,20 @@
 import {
   Controller,
   Get,
-  Post,
+  //Post,
   Body,
   Patch,
   Delete,
   HttpCode,
   HttpStatus,
+  Param,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import {
   CreateUserDto,
   UpdateUserDto,
@@ -21,10 +27,12 @@ import { token_payload } from '../auth/interfaces/Token_Payload.interface';
 import { Roles } from 'generated/prisma';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
+  /*
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
@@ -36,9 +44,9 @@ export class UsersController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.service.create(createUserDto);
   }
+  */
 
   @Get()
-  @Auth()
   @AuthRoles(Roles.ADMIN)
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({
@@ -102,5 +110,15 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found' })
   remove(@CurrentUser() user: token_payload) {
     return this.service.delete(user.sub);
+  }
+
+  @Delete('delete-account/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a user by id' })
+  @ApiResponse({ status: 204, description: 'User successfully deleted' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @AuthRoles(Roles.ADMIN)
+  deleteById(@Param('id') id: string) {
+    return this.service.delete(id);
   }
 }

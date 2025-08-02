@@ -1,5 +1,10 @@
 import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Auth, AuthRoles, CurrentUser } from '../auth/decorators';
 import { OrgService } from './org.service';
 import { CreateOrgDto, UpdateOrgDto } from './dto/org.dto';
@@ -9,6 +14,7 @@ import { MemberRoles } from '../employees/decorators/role.decorator';
 
 @Auth()
 @ApiTags('org')
+@ApiBearerAuth()
 @Controller('org')
 export class OrgController {
   constructor(private readonly orgService: OrgService) {}
