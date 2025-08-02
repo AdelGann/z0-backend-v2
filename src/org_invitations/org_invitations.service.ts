@@ -46,10 +46,12 @@ export class OrgInvitationsService {
     if (user === null) {
       throw new NotFoundException('User not found');
     }
-    const existingInvitation = await this.dbService.org_invitations.findFirst({
+    const existingInvitation = await this.dbService.org_invitations.findUnique({
       where: {
-        org_id,
-        user_id: user.id,
+        org_id_user_id: {
+          org_id,
+          user_id: user.id,
+        },
         state: InvitationState.PENDING,
       },
     });
@@ -87,10 +89,12 @@ export class OrgInvitationsService {
     if (org_inv?.user_id !== user.id) {
       throw new ForbiddenException('You are not the owner of this invitation');
     }
-    const existingEmployee = await this.dbService.employees.findFirst({
+    const existingEmployee = await this.dbService.employees.findUnique({
       where: {
-        user_id,
-        org_id: org_inv.org_id,
+        org_id_user_id: {
+          org_id: org_inv.org_id,
+          user_id: user.id,
+        },
       },
     });
     if (existingEmployee) {

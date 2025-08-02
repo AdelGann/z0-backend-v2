@@ -14,6 +14,8 @@
     "db:check": "npx prisma validate",
     "db:format": "npx prisma format",
     "db:debug": "npx prisma debug",
+    "db:seed": "npx prisma db seed",
+    "db:generate": "npx prisma generate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

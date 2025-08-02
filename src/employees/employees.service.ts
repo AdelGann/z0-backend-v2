@@ -38,8 +38,10 @@ export class EmployeesService {
   async update(user_id: string, employee: EmployeeDto): Promise<employees> {
     return this.dbService.employees.update({
       where: {
-        user_id,
-        org_id: employee.org_id,
+        org_id_user_id: {
+          user_id,
+          org_id: employee.org_id,
+        },
       },
       data: {
         doc_num: employee?.doc_num,
@@ -86,8 +88,10 @@ export class EmployeesService {
     }
     return this.dbService.employees.delete({
       where: {
-        user_id,
-        org_id,
+        org_id_user_id: {
+          user_id,
+          org_id,
+        },
       },
     });
   }
