@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsUUID } from 'class-validator';
+import { IsEmail, IsEnum, IsUUID } from 'class-validator';
 import { InvitationState } from 'generated/prisma';
 
 export class InvitationDto {
@@ -17,4 +17,14 @@ export class InvitationDto {
   })
   @IsEnum(InvitationState)
   state!: InvitationState;
+}
+
+export class InviteDto {
+  @ApiProperty({
+    description:
+      'Correo electrónico del usuario que será invitado a la organización',
+    example: 'usuario@ejemplo.com',
+  })
+  @IsEmail()
+  user_email: string;
 }

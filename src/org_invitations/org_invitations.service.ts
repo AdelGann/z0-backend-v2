@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -45,6 +46,18 @@ export class OrgInvitationsService {
     if (user === null) {
       throw new NotFoundException('User not found');
     }
+    const existingInvitation = await this.dbService.org_invitations.findFirst({
+      where: {
+        org_id,
+        user_id: user.id,
+        state: InvitationState.PENDING,
+      },
+    });
+    if (existingInvitation) {
+      throw new ConflictException(
+        'Pending invitation already exists for this user',
+      );
+    }
     return this.dbService.org_invitations.create({
       data: {
         org_id,
@@ -53,6 +66,7 @@ export class OrgInvitationsService {
       },
     });
   }
+
   // NOTE: Servicio para aceptar o rechazar
   async reply(user_id: string, invitation: InvitationDto) {
     const user = await this.dbService.users.findFirst({
@@ -72,6 +86,17 @@ export class OrgInvitationsService {
     }
     if (org_inv?.user_id !== user.id) {
       throw new ForbiddenException('You are not the owner of this invitation');
+    }
+    const existingEmployee = await this.dbService.employees.findFirst({
+      where: {
+        user_id,
+        org_id: org_inv.org_id,
+      },
+    });
+    if (existingEmployee) {
+      throw new ConflictException(
+        'User is already an employee of this organization',
+      );
     }
     const inv_updated = await this.dbService.org_invitations.update({
       where: { id: invitation.invitation_id },
