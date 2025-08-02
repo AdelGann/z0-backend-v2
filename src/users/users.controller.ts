@@ -21,7 +21,7 @@ import {
   UpdatePasswordDto,
 } from './dto/user.dto';
 import { UsersService } from './users.service';
-import { user_response } from 'src/interfaces/user.interface';
+import { user_response } from 'src/users/interfaces/user.interface';
 import { Auth, AuthRoles, CurrentUser } from '../auth/decorators';
 import { token_payload } from '../auth/interfaces/Token_Payload.interface';
 import { Roles } from 'generated/prisma';

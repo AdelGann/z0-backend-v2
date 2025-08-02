@@ -7,7 +7,7 @@ import {
   UpdatePasswordDto,
   UpdateUserDto,
 } from './dto/user.dto';
-import { user_response } from '../interfaces/user.interface';
+import { user_response } from './interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
