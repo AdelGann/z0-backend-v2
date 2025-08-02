@@ -4,11 +4,11 @@ import { InvitationState } from 'generated/prisma';
 
 export class InvitationDto {
   @ApiProperty({
-    description: 'Organization id',
-    example: 'org-id',
+    description: 'Invitation ID',
+    example: 'inv-id',
   })
   @IsUUID()
-  org_id!: string;
+  invitation_id!: string;
 
   @ApiProperty({
     description: 'State of the invitation',

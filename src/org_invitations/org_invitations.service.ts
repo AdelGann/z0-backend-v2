@@ -1,11 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DbService } from '../common/db/db.service';
-import { InvitationState } from 'generated/prisma';
+import { InvitationState, Roles } from 'generated/prisma';
 import { InvitationDto } from './dto/invitations.dto';
+import { EmployeesService } from 'src/employees/employees.service';
 
 @Injectable()
 export class OrgInvitationsService {
-  constructor(private readonly dbService: DbService) {}
+  constructor(
+    private readonly dbService: DbService,
+    private readonly employeesService: EmployeesService,
+  ) {}
 
   async getAll(user_id: string) {
     const user = await this.dbService.users.findFirst({
@@ -20,7 +28,7 @@ export class OrgInvitationsService {
       },
     });
   }
-  async invite(org_id: string, user_id: string) {
+  async invite(org_id: string, user_email: string) {
     const org = await this.dbService.orgs.findFirst({
       where: {
         id: org_id,
@@ -28,7 +36,7 @@ export class OrgInvitationsService {
     });
     const user = await this.dbService.users.findFirst({
       where: {
-        id: user_id,
+        email: user_email,
       },
     });
     if (org === null) {
@@ -40,7 +48,7 @@ export class OrgInvitationsService {
     return this.dbService.org_invitations.create({
       data: {
         org_id,
-        user_id,
+        user_id: user.id,
         state: InvitationState.PENDING,
       },
     });
@@ -52,6 +60,34 @@ export class OrgInvitationsService {
     });
     if (user === null) {
       throw new NotFoundException('User not found');
+    }
+    const org_inv = await this.dbService.org_invitations.findFirst({
+      where: {
+        id: invitation.invitation_id,
+        state: InvitationState.PENDING,
+      },
+    });
+    if (org_inv === null) {
+      throw new NotFoundException('Invitation not found');
+    }
+    if (org_inv?.user_id !== user.id) {
+      throw new ForbiddenException('You are not the owner of this invitation');
+    }
+    const inv_updated = await this.dbService.org_invitations.update({
+      where: { id: invitation.invitation_id },
+      data: {
+        state: invitation.state,
+        update_at: new Date(),
+      },
+    });
+    if (inv_updated.state === InvitationState.ACCEPTED) {
+      await this.employeesService.create(user.id, {
+        org_id: org_inv.org_id,
+        role: Roles.USER,
+        doc_num: undefined,
+      });
+    } else {
+      return 'User rejected the invitation';
     }
   }
 }
