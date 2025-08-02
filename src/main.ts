@@ -20,7 +20,7 @@ async function bootstrap() {
         bearerFormat: 'JWT',
         description: 'Ingrese su token JWT',
       },
-      'bearer', // nombre del esquema o id que usarás para referenciarlo
+      'bearer',
     )
     .addTag('users', 'Endpoints relacionados con usuarios')
     .build();
@@ -28,7 +28,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document, {
     swaggerOptions: {
-      // Esto asegura que Swagger "use" el esquema para todas las operaciones por defecto
       security: [{ bearer: [] }],
     },
   });
