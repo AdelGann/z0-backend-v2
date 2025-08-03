@@ -169,15 +169,18 @@ model orgs {
 
 model products {
   id         String    @id @unique @default(uuid())
-  org_id     String    
+  org_id     String
   name       String
   quantity   BigInt?
   price      Float?
+  money_type Money?
   created_at DateTime? @default(now())
   update_at  DateTime? @updatedAt
-  order_id   String    @unique
-  orders     orders    @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_products")
+  order_id   String?   @unique
+  orders     orders?   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_products")
   orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_products")
+
+  @@unique([org_id, id], map: "unique_org_product")
 }
 
 model schema_migrations {
