@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { DbService } from '../common/db/db.service';
 import { EmployeesService } from '../employees/employees.service';
 import { CreateOrgDto, SelectOrgDto, UpdateOrgDto } from './dto/org.dto';
@@ -72,16 +71,9 @@ export class OrgService {
   // Debería agregar el ID de la organización en el DTO?
   async update(updateOrg: UpdateOrgDto) {
     //const user = await this.usersService.getById(founder_id);
-    const org = await this.dbService.orgs.findUnique({
-      where: { id: updateOrg.id },
-    });
     //if (user === null) {
     //  throw new NotFoundException('User not founded');
     //}
-    if (org === null) {
-      throw new NotFoundException('Organization not founded');
-    }
-
     //TODO: falta validar usuarios empleados que tengan permisos para modificar
     //?: Aunque no es necesario que más de una persona pueda modificar la organización.
     //Evaluar
@@ -92,7 +84,7 @@ export class OrgService {
     //  );
     //}
     return this.dbService.orgs.update({
-      where: { id: org.id },
+      where: { id: updateOrg.id },
       data: {
         name: updateOrg.name,
         update_at: new Date(),
