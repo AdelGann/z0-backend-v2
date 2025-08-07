@@ -56,6 +56,8 @@ model clients {
   client_feedbacks client_feedbacks[]
   orgs             orgs               @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_clients")
   orders           orders[]
+  employees        employees?         @relation("client_employee_rl", fields: [employeesId], references: [id])
+  employeesId      String?
 
   @@unique([org_id, doc_num], map: "unique_org_client")
   @@index([org_id], map: "idx_org_clients_org_id")
@@ -77,8 +79,12 @@ model debts {
   created_at   DateTime?   @default(now())
   debt_type_id String      @unique
   org_id       String
+  employee_id  String?
   debt_types   debt_types  @relation(fields: [debt_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_debts_debt_type")
   orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_debts")
+  employees    employees?  @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([employee_id], map: "idx_debts_employee_id")
 }
 
 model employees {
@@ -92,6 +98,9 @@ model employees {
   orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_employees")
   users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_employees")
   orders     orders[]
+  debts      debts[]
+  incomes    incomes[]
+  clients    clients[] @relation("client_employee_rl", fields: [], references: [])
 
   @@unique([org_id, user_id], map: "unique_org_user")
   @@index([org_id], map: "idx_org_employees_org_id")
@@ -113,8 +122,12 @@ model incomes {
   created_at     DateTime?    @default(now())
   income_type_id String       @unique
   org_id         String
+  employee_id    String?
   income_types   income_types @relation(fields: [income_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_incomes_income_type")
   orgs           orgs         @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_incomes")
+  employees      employees?   @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([employee_id], map: "idx_incomes_employee_id")
 }
 
 model metrics {
@@ -126,7 +139,7 @@ model metrics {
   income_count BigInt @default(0)
   debt_count   BigInt @default(0)
   org_id       String @unique()
-  orgs         orgs   @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_metrics") 
+  orgs         orgs   @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_metrics")
 }
 
 model orders {
@@ -170,14 +183,14 @@ model orgs {
   name             String
   created_at       DateTime?          @default(now())
   update_at        DateTime?          @updatedAt
-  client_feedbacks client_feedbacks[] 
-  clients          clients[]          
-  debts            debts[]           
-  employees        employees[]        
-  incomes          incomes[]          
-  metrics          metrics?           
-  orders           orders[]           
-  org_invitations  org_invitations[]  
+  client_feedbacks client_feedbacks[]
+  clients          clients[]
+  debts            debts[]
+  employees        employees[]
+  incomes          incomes[]
+  metrics          metrics?
+  orders           orders[]
+  org_invitations  org_invitations[]
   users            users              @relation(fields: [founder_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_organizations")
   products         products[]
 
@@ -217,7 +230,7 @@ model users {
   created_at      DateTime?         @default(now())
   update_at       DateTime?         @updatedAt
   role            Roles             @default(USER)
-  employees       employees[]       
-  org_invitations org_invitations[] 
-  orgs            orgs[]            
+  employees       employees[]
+  org_invitations org_invitations[]
+  orgs            orgs[]
 }
