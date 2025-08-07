@@ -72,14 +72,6 @@ export class EmployeesService {
         user_id: admin_id,
       },
     })) as employees; // assertion; debido a que el admin siempre va a ser encontrado
-    const org = await this.dbService.orgs.findFirst({
-      where: {
-        id: org_id,
-      },
-    });
-    if (!org) {
-      throw new NotFoundException('Organization not founded');
-    }
     if (!employee) {
       throw new NotFoundException('Employee not founded');
     }
