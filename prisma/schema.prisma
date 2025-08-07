@@ -33,6 +33,11 @@ enum InvitationState {
   ACCEPTED
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+}
+
 model client_feedbacks {
   id         String    @id @unique @default(uuid())
   client_id  String
@@ -52,7 +57,7 @@ model clients {
   doc_num          String             @unique
   full_name        String
   created_at       DateTime?          @default(now())
-  update_at        DateTime?          @updatedAt
+  updated_at       DateTime?          @updatedAt
   client_feedbacks client_feedbacks[]
   orgs             orgs               @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_clients")
   orders           orders[]
@@ -64,27 +69,22 @@ model clients {
   @@index([doc_num], map: "idx_org_clients_doc_num")
 }
 
-model debt_types {
-  id    String  @id @unique @default(uuid())
-  name  String  @unique() @db.VarChar(50)
-  debts debts[] @relation("debt_type_rl", fields: [], references: [])
-}
-
 model debts {
-  id           String      @id @unique @default(uuid())
-  debt_type    String      @db.VarChar(20)
+  id           String        @id @unique @default(uuid())
+  debt_type    String        @db.VarChar(20)
   payment_type PaymentType
   money_type   Money
   amount       Float?
-  created_at   DateTime?   @default(now())
-  debt_type_id String
   org_id       String
   employee_id  String?
-  debt_types   debt_types  @relation("debt_type_rl", fields: [debt_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_debts_debt_type")
-  orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_debts")
-  employees    employees?  @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  orgs         orgs          @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_debts")
+  employees    employees?    @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status       PaymentStatus @default(PENDING)
+  created_at   DateTime?     @default(now())
+  updated_at   DateTime?     @updatedAt
 
-  @@index([employee_id], map: "idx_debts_employee_id")
+  @@unique([org_id, employee_id], map: "unique_org_employee_debt")
+  @@index([employee_id, org_id], map: "idx_debts_employee_id_org_id")
 }
 
 model employees {
@@ -107,28 +107,22 @@ model employees {
   @@index([user_id], map: "idx_org_employees_user_id")
 }
 
-model income_types {
-  id      String    @id @unique @default(uuid())
-  name    String    @unique() @db.VarChar(50)
-  incomes incomes[] @relation("income_type_rl", fields: [], references: [])
-}
-
 model incomes {
-  id             String       @id @unique @default(uuid())
-  income_type    String       @db.VarChar(20)
-  payment_type   PaymentType
-  money_type     Money
-  amount         Float?
-  created_at     DateTime?    @default(now())
-  income_type_id String
-  org_id         String
-  employee_id    String?
-  income_types   income_types @relation("income_type_rl", fields: [income_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_incomes_income_type")
-  orgs           orgs         @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_incomes")
-  employees      employees?   @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id           String        @id @unique @default(uuid())
+  income_type  String        @db.VarChar(20)
+  payment_type PaymentType
+  money_type   Money
+  amount       Float?
+  org_id       String
+  employee_id  String?
+  orgs         orgs          @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_incomes")
+  employees    employees?    @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status       PaymentStatus @default(PENDING)
+  created_at   DateTime?     @default(now())
+  updated_at   DateTime?     @updatedAt
 
-  @@index([employee_id], map: "idx_incomes_employee_id")
-  @@index([income_type_id], map: "idx_incomes_income_type_id")
+  @@unique([org_id, employee_id], map: "unique_org_employee_income")
+  @@index([employee_id, org_id], map: "idx_incomes_employee_id_org_id")
 }
 
 model metrics {
@@ -152,7 +146,7 @@ model orders {
   payment_type PaymentType
   money_type   Money
   created_at   DateTime?   @default(now())
-  update_at    DateTime?   @updatedAt
+  updated_at   DateTime?   @updatedAt
   employee     employees   @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_employee")
   clients      clients     @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_client")
   orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_org")
