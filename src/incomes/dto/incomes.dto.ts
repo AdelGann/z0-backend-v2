@@ -10,6 +10,28 @@ import {
 } from 'class-validator';
 import { Money, PaymentStatus, PaymentType } from 'generated/prisma';
 
+export class SearchParamsDto {
+  @ApiProperty({
+    description: 'Employee id',
+    type: String,
+    required: false,
+    example: '1512-1258-1258',
+  })
+  @IsUUID()
+  @IsOptional()
+  employee_id?: string;
+
+  @ApiProperty({
+    description: 'org id',
+    type: String,
+    required: false,
+    example: '1512-1258-1258',
+  })
+  @IsUUID()
+  @IsOptional()
+  org_id?: string;
+}
+
 export class CreateIncomeDto {
   @ApiProperty({
     description: 'Income type name',
@@ -18,7 +40,7 @@ export class CreateIncomeDto {
   })
   @IsNotEmpty()
   @IsString()
-  debt_type!: string;
+  income_type!: string;
 
   @ApiProperty({
     description: 'Payment type',
