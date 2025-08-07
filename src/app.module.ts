@@ -7,6 +7,11 @@ import { ProductsModule } from './products/products.module';
 import { OrgModule } from './org/org.module';
 import { EmployeesModule } from './employees/employees.module';
 import { OrgInvitationsModule } from './org_invitations/org_invitations.module';
+import { ClientsModule } from './clients/clients.module';
+import { DebtsModule } from './debts/debts.module';
+import { IncomesModule } from './incomes/incomes.module';
+import { OrdersModule } from './orders/orders.module';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
   imports: [
@@ -18,6 +23,11 @@ import { OrgInvitationsModule } from './org_invitations/org_invitations.module';
     OrgModule,
     EmployeesModule,
     OrgInvitationsModule,
+    ClientsModule,
+    DebtsModule,
+    IncomesModule,
+    OrdersModule,
+    MetricsModule,
   ],
 })
 export class AppModule {}
