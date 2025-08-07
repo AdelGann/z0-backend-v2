@@ -35,25 +35,31 @@ enum InvitationState {
 
 model client_feedbacks {
   id         String    @id @unique @default(uuid())
-  client_id  String    @unique
-  org_id     String    @unique
+  client_id  String
+  org_id     String
   rating     BigInt
   comment    String
   created_at DateTime? @default(now())
   clients    clients   @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_clients_feedbacks")
   orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_feedbacks")
+
+  @@unique([org_id, client_id], map: "unique_org_client_feedback")
 }
 
 model clients {
   id               String             @id @unique @default(uuid())
-  org_id           String             @unique
-  doc_num          String             @unique()
-  full_name        String             @unique()
+  org_id           String
+  doc_num          String             @unique
+  full_name        String
   created_at       DateTime?          @default(now())
   update_at        DateTime?          @updatedAt
   client_feedbacks client_feedbacks[]
   orgs             orgs               @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_clients")
   orders           orders[]
+
+  @@unique([org_id, doc_num], map: "unique_org_client")
+  @@index([org_id], map: "idx_org_clients_org_id")
+  @@index([doc_num], map: "idx_org_clients_doc_num")
 }
 
 model debt_types {
@@ -69,8 +75,8 @@ model debts {
   money_type   Money
   amount       Float?
   created_at   DateTime?   @default(now())
-  debt_type_id String      @unique()
-  org_id       String      @unique
+  debt_type_id String      @unique
+  org_id       String
   debt_types   debt_types  @relation(fields: [debt_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_debts_debt_type")
   orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_debts")
 }
@@ -85,8 +91,11 @@ model employees {
   update_at  DateTime? @updatedAt
   orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_employees")
   users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_employees")
+  orders     orders[]
 
   @@unique([org_id, user_id], map: "unique_org_user")
+  @@index([org_id], map: "idx_org_employees_org_id")
+  @@index([user_id], map: "idx_org_employees_user_id")
 }
 
 model income_types {
@@ -102,8 +111,8 @@ model incomes {
   money_type     Money
   amount         Float?
   created_at     DateTime?    @default(now())
-  income_type_id String       @unique()
-  org_id         String       @unique
+  income_type_id String       @unique
+  org_id         String
   income_types   income_types @relation(fields: [income_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_incomes_income_type")
   orgs           orgs         @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_incomes")
 }
@@ -117,21 +126,27 @@ model metrics {
   income_count BigInt @default(0)
   debt_count   BigInt @default(0)
   org_id       String @unique()
-  orgs         orgs   @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_metrics")
+  orgs         orgs   @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_metrics") 
 }
 
 model orders {
   id           String      @id @unique @default(uuid())
-  org_id       String      @unique
-  client_id    String      @unique
+  org_id       String
+  client_id    String
+  employee_id  String
   total_amount Float?
   payment_type PaymentType
   money_type   Money
   created_at   DateTime?   @default(now())
   update_at    DateTime?   @updatedAt
-  clients      clients     @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_orders_client")
-  orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_orders_org")
+  employee     employees   @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_employee")
+  clients      clients     @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_client")
+  orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_org")
   products     products[]
+
+  @@unique([org_id, client_id], map: "unique_org_client_order")
+  @@index([org_id], map: "idx_org_orders_org_id")
+  @@index([client_id], map: "idx_org_orders_client_id")
 }
 
 model org_invitations {
@@ -151,20 +166,22 @@ model org_invitations {
 
 model orgs {
   id               String             @id @unique @default(uuid())
-  founder_id       String             @unique
+  founder_id       String
   name             String
   created_at       DateTime?          @default(now())
   update_at        DateTime?          @updatedAt
-  client_feedbacks client_feedbacks[]
-  clients          clients[]
-  debts            debts[]
-  employees        employees[]
-  incomes          incomes[]
-  metrics          metrics?
-  orders           orders[]
-  org_invitations  org_invitations[]
+  client_feedbacks client_feedbacks[] 
+  clients          clients[]          
+  debts            debts[]           
+  employees        employees[]        
+  incomes          incomes[]          
+  metrics          metrics?           
+  orders           orders[]           
+  org_invitations  org_invitations[]  
   users            users              @relation(fields: [founder_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_organizations")
   products         products[]
+
+  @@unique([founder_id, id], map: "unique_org_founder")
 }
 
 model products {
@@ -194,13 +211,13 @@ model schema_migrations {
 model users {
   id              String            @id @unique @default(uuid())
   full_name       String
-  user_name       String            @unique()
-  email           String            @unique()
+  user_name       String            @unique
+  email           String            @unique
   password        String
   created_at      DateTime?         @default(now())
   update_at       DateTime?         @updatedAt
   role            Roles             @default(USER)
-  employees       employees[]
-  org_invitations org_invitations[]
-  orgs            orgs[]
+  employees       employees[]       
+  org_invitations org_invitations[] 
+  orgs            orgs[]            
 }
