@@ -66,7 +66,7 @@ export class CreateDebtDto {
   employee_id?: string;
 }
 
-export class UpdateStatusDebtDtop {
+export class UpdateDebtStatusDto {
   @ApiProperty({
     description: 'debt id',
     required: true,
