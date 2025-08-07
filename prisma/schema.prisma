@@ -171,6 +171,7 @@ model products {
   id         String    @id @unique @default(uuid())
   org_id     String
   name       String
+  code       String
   quantity   BigInt?
   price      Float?
   money_type Money?
@@ -180,7 +181,9 @@ model products {
   orders     orders?   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_products")
   orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_products")
 
+  @@unique([org_id, id, code], map: "unique_org_product_code")
   @@unique([org_id, id], map: "unique_org_product")
+  @@index([org_id], map: "idx_org_products_org_id")
 }
 
 model schema_migrations {
