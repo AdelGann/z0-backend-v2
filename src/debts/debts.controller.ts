@@ -9,10 +9,10 @@ import { Auth } from 'src/auth/decorators';
 import { ValidateMember } from 'src/employees/decorators/member.decorator';
 import { DebtsService } from './debts.service';
 import {
-  CreateDebtDto,
-  SearchParamsDto,
-  UpdateDebtStatusDto,
-} from './dto/debts.dto';
+  CreateDebtInput,
+  SearchParamsInput,
+  UpdateDebtStatusInput,
+} from './inputs/debts.input';
 
 @Auth()
 @ApiTags('debts')
@@ -35,7 +35,7 @@ export class DebtsController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  getAll(@Query() params: SearchParamsDto) {
+  getAll(@Query() params: SearchParamsInput) {
     return this.debtsService.getAll(params);
   }
 
@@ -52,7 +52,7 @@ export class DebtsController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  post(@Query('org_id') org_id: string, @Body() createDebt: CreateDebtDto) {
+  post(@Query('org_id') org_id: string, @Body() createDebt: CreateDebtInput) {
     return this.debtsService.create(org_id, createDebt);
   }
 
@@ -69,7 +69,7 @@ export class DebtsController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  updateStatus(@Body() updateDebtsStatus: UpdateDebtStatusDto) {
+  updateStatus(@Body() updateDebtsStatus: UpdateDebtStatusInput) {
     return this.debtsService.updateStatus(updateDebtsStatus);
   }
 }

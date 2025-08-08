@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import {
-  CreateDebtDto,
-  SearchParamsDto,
-  UpdateDebtStatusDto,
-} from './dto/debts.dto';
+  CreateDebtInput,
+  SearchParamsInput,
+  UpdateDebtStatusInput,
+} from './inputs/debts.input';
 import { DbService } from 'src/common/db/db.service';
 
 @Injectable()
 export class DebtsService {
   constructor(private readonly dbService: DbService) {}
 
-  getAll(params: SearchParamsDto) {
+  getAll(params: SearchParamsInput) {
     return this.dbService.debts.findMany({
       where: {
         ...params,
       },
     });
   }
-  create(org_id: string, values: CreateDebtDto) {
+  create(org_id: string, values: CreateDebtInput) {
     const { employee_id, ...rest } = values;
     return this.dbService.debts.create({
       data: {
@@ -29,7 +29,7 @@ export class DebtsService {
       },
     });
   }
-  updateStatus(values: UpdateDebtStatusDto) {
+  updateStatus(values: UpdateDebtStatusInput) {
     return this.dbService.debts.update({
       where: {
         id: values.id,
