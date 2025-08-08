@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { DbService } from '../common/db/db.service';
 import { Roles, users } from '../../generated/prisma';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateUserDto } from './dto/user.dto';
+import { CreateUserInput } from './inputs/user.input';
 import { BadRequestException } from '@nestjs/common';
 
 const dbMock = {
@@ -189,7 +189,6 @@ describe('UsersService', () => {
           where: {
             email: mocked_data.email,
           },
-        
         });
       });
     });
@@ -506,7 +505,7 @@ describe('UsersService', () => {
   });
 });
 
-const mocked_data: CreateUserDto = {
+const mocked_data: CreateUserInput = {
   full_name: 'Adel Gannem',
   user_name: 'AdelG',
   email: 'mocked_email@gmail.com',

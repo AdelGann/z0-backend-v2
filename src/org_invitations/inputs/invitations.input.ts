@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsUUID } from 'class-validator';
 import { InvitationState } from 'generated/prisma';
 
-export class InvitationDto {
+export class InvitationInput {
   @ApiProperty({
     description: 'Invitation ID',
     example: 'inv-id',
@@ -19,7 +19,7 @@ export class InvitationDto {
   state!: InvitationState;
 }
 
-export class InviteDto {
+export class InviteInput {
   @ApiProperty({
     description:
       'Correo electrónico del usuario que será invitado a la organización',

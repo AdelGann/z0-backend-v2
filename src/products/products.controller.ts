@@ -18,10 +18,10 @@ import { ValidateMember } from 'src/employees/decorators/member.decorator';
 import { MemberRoles } from 'src/employees/decorators/role.decorator';
 import { ProductsService } from './products.service';
 import {
-  CreateProductDto,
-  SearchProductDto,
-  UpdateProductDto,
-} from './dto/product.dto';
+  CreateProductInput,
+  SearchProductInput,
+  UpdateProductInput,
+} from './inputs/product.input';
 import { Roles } from 'generated/prisma';
 
 @ApiTags('Products')
@@ -44,7 +44,7 @@ export class ProductsController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  getAll(@Query(`search`) params: SearchProductDto) {
+  getAll(@Query(`search`) params: SearchProductInput) {
     return this.productsService.getAll(params);
   }
 
@@ -61,7 +61,7 @@ export class ProductsController {
     description: 'Forbbiden Resource',
   })
   @MemberRoles(Roles.ADMIN)
-  create(@Query('org_id') org_id: string, @Body() body: CreateProductDto) {
+  create(@Query('org_id') org_id: string, @Body() body: CreateProductInput) {
     return this.productsService.create(org_id, body);
   }
 
@@ -78,7 +78,7 @@ export class ProductsController {
     description: 'Forbbiden Resource',
   })
   @MemberRoles(Roles.ADMIN)
-  update(@Query('org_id') org_id: string, @Body() body: UpdateProductDto) {
+  update(@Query('org_id') org_id: string, @Body() body: UpdateProductInput) {
     return this.productsService.update(org_id, body);
   }
 

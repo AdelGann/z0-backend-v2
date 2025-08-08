@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { Auth, AuthRoles, CurrentUser } from '../auth/decorators';
 import { OrgService } from './org.service';
-import { CreateOrgDto, UpdateOrgDto } from './dto/org.dto';
+import { CreateOrgInput, UpdateOrgInput } from './inputs/org.input';
 import { Roles, users } from 'generated/prisma';
 import { ValidateMember } from '../employees/decorators/member.decorator';
 import { MemberRoles } from '../employees/decorators/role.decorator';
@@ -54,10 +54,10 @@ export class OrgController {
   @ApiResponse({
     status: 201,
     description: 'Org successfully created',
-    type: CreateOrgDto,
+    type: CreateOrgInput,
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  create(@Body() createOrg: CreateOrgDto, @CurrentUser() user: users) {
+  create(@Body() createOrg: CreateOrgInput, @CurrentUser() user: users) {
     return this.orgService.create(createOrg, user.id);
   }
 
@@ -67,10 +67,10 @@ export class OrgController {
   @ApiResponse({
     status: 200,
     description: 'Org successfully updated',
-    type: UpdateOrgDto,
+    type: UpdateOrgInput,
   })
   @ApiResponse({ status: 404, description: 'Org not found' })
-  update(@Body() updateOrg: UpdateOrgDto) {
+  update(@Body() updateOrg: UpdateOrgInput) {
     return this.orgService.update(updateOrg);
   }
 

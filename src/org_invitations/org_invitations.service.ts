@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { DbService } from '../common/db/db.service';
 import { InvitationState, Roles } from 'generated/prisma';
-import { InvitationDto } from './dto/invitations.dto';
+import { InvitationInput } from './inputs/invitations.input';
 import { EmployeesService } from 'src/employees/employees.service';
 
 @Injectable()
@@ -70,7 +70,7 @@ export class OrgInvitationsService {
   }
 
   // NOTE: Servicio para aceptar o rechazar
-  async reply(user_id: string, invitation: InvitationDto) {
+  async reply(user_id: string, invitation: InvitationInput) {
     const user = await this.dbService.users.findFirst({
       where: { id: user_id },
     });

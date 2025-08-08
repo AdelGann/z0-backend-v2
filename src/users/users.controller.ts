@@ -16,10 +16,10 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import {
-  CreateUserDto,
-  UpdateUserDto,
-  UpdatePasswordDto,
-} from './dto/user.dto';
+  CreateUserInput,
+  UpdateUserInput,
+  UpdatePasswordInput,
+} from './inputs/user.input';
 import { UsersService } from './users.service';
 import { user_response } from 'src/users/interfaces/user.interface';
 import { Auth, AuthRoles, CurrentUser } from '../auth/decorators';
@@ -38,11 +38,11 @@ export class UsersController {
   @ApiResponse({
     status: 201,
     description: 'User successfully created',
-    type: CreateUserDto,
+    type: CreateUserInput,
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.service.create(createUserDto);
+  create(@Body() createUserInput: CreateUserInput) {
+    return this.service.create(createUserInput);
   }
   */
 
@@ -52,7 +52,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'List of all users',
-    type: [CreateUserDto],
+    type: [CreateUserInput],
   })
   async findAll(): Promise<user_response[]> {
     return await this.service.getAll();
@@ -64,7 +64,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'User found',
-    type: CreateUserDto,
+    type: CreateUserInput,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   async findOne(
@@ -78,14 +78,14 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'User successfully updated',
-    type: UpdateUserDto,
+    type: UpdateUserInput,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   update(
     @CurrentUser() user: token_payload,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserInput: UpdateUserInput,
   ) {
-    return this.service.update(user.sub, updateUserDto);
+    return this.service.update(user.sub, updateUserInput);
   }
 
   @Patch('restore-password')
@@ -93,14 +93,14 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Password successfully updated',
-    type: UpdatePasswordDto,
+    type: UpdatePasswordInput,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   updatePassword(
     @CurrentUser() user: token_payload,
-    @Body() updatePasswordDto: UpdatePasswordDto,
+    @Body() updatePasswordInput: UpdatePasswordInput,
   ) {
-    return this.service.updatePassword(user.sub, updatePasswordDto);
+    return this.service.updatePassword(user.sub, updatePasswordInput);
   }
 
   @Delete('delete-account')

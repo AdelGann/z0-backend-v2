@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DbService } from '../common/db/db.service';
 import { EmployeesService } from '../employees/employees.service';
-import { CreateOrgDto, SelectOrgDto, UpdateOrgDto } from './dto/org.dto';
+import { CreateOrgInput, SelectOrgInput, UpdateOrgInput } from './inputs/org.input';
 
 @Injectable()
 export class OrgService {
@@ -17,7 +17,7 @@ export class OrgService {
   }
   // NOTE: esto en teoria será para cuando se vaya a iniciar sesión
   // Entonces el usuario podrá elegir entre organizaciones
-  async getAllOrgByUser(user_id: string): Promise<SelectOrgDto[]> {
+  async getAllOrgByUser(user_id: string): Promise<SelectOrgInput[]> {
     return this.dbService.orgs.findMany({
       where: {
         employees: {
@@ -45,7 +45,7 @@ export class OrgService {
     });
   }
 
-  async create(org: CreateOrgDto, founder_id: string) {
+  async create(org: CreateOrgInput, founder_id: string) {
     const user = await this.dbService.users.findUnique({
       where: { id: founder_id },
     });
@@ -68,8 +68,8 @@ export class OrgService {
   }
 
   // NOTE: SOLO administradores de la organización
-  // Debería agregar el ID de la organización en el DTO?
-  async update(updateOrg: UpdateOrgDto) {
+  // Debería agregar el ID de la organización en el Input?
+  async update(updateOrg: UpdateOrgInput) {
     //const user = await this.usersService.getById(founder_id);
     //if (user === null) {
     //  throw new NotFoundException('User not founded');

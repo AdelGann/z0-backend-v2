@@ -11,7 +11,7 @@ import { Auth, CurrentUser } from 'src/auth/decorators';
 import { OrgInvitationsService } from './org_invitations.service';
 import { Post } from '@nestjs/common';
 import { MemberRoles } from 'src/employees/decorators/role.decorator';
-import { InvitationDto, InviteDto } from './dto/invitations.dto';
+import { InvitationInput, InviteInput } from './inputs/invitations.input';
 
 @ApiTags('org-invitations')
 @ApiBearerAuth()
@@ -37,7 +37,7 @@ export class OrgInvitationsController {
   }
 
   @Post()
-  @ApiBody({ type: InviteDto })
+  @ApiBody({ type: InviteInput })
   @ApiOperation({ summary: 'invite a user to an organization' })
   @ApiResponse({
     status: 201,
@@ -52,12 +52,12 @@ export class OrgInvitationsController {
     description: 'user not found',
   })
   @MemberRoles(Roles.ADMIN)
-  invite(@Query('org_id') org_id: string, @Body() body: InviteDto) {
+  invite(@Query('org_id') org_id: string, @Body() body: InviteInput) {
     return this.invitationsService.invite(org_id, body.user_email);
   }
 
   @Patch()
-  @ApiBody({ type: InvitationDto })
+  @ApiBody({ type: InvitationInput })
   @ApiResponse({
     status: 200,
     description: 'invitation state updated successfully',
@@ -74,7 +74,7 @@ export class OrgInvitationsController {
     status: 404,
     description: 'user not found',
   })
-  reply(@CurrentUser() user: users, @Body() invitation: InvitationDto) {
+  reply(@CurrentUser() user: users, @Body() invitation: InvitationInput) {
     return this.invitationsService.reply(user.id, invitation);
   }
 }

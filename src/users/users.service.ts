@@ -3,10 +3,10 @@ import { DbService } from '../common/db/db.service';
 import { OrgService } from '../org/org.service';
 import { Roles, users } from '../../generated/prisma';
 import {
-  CreateUserDto,
-  UpdatePasswordDto,
-  UpdateUserDto,
-} from './dto/user.dto';
+  CreateUserInput,
+  UpdatePasswordInput,
+  UpdateUserInput,
+} from './inputs/user.input';
 import { user_response } from './interfaces/user.interface';
 
 @Injectable()
@@ -62,7 +62,7 @@ export class UsersService {
     });
   }
 
-  async create(user: CreateUserDto): Promise<user_response> {
+  async create(user: CreateUserInput): Promise<user_response> {
     const user_name = await this.getByUserName(user.user_name);
     const email = await this.getByEmail(user.email);
     if (user_name !== null) {
@@ -89,7 +89,7 @@ export class UsersService {
     return newUser;
   }
 
-  async createAdmin(user: CreateUserDto): Promise<user_response> {
+  async createAdmin(user: CreateUserInput): Promise<user_response> {
     const user_name = await this.getByUserName(user.user_name);
     const email = await this.getByEmail(user.email);
     if (user_name !== null) {
@@ -116,7 +116,7 @@ export class UsersService {
     return newUser;
   }
 
-  async update(id: string, updateInput: UpdateUserDto): Promise<user_response> {
+  async update(id: string, updateInput: UpdateUserInput): Promise<user_response> {
     const user = await this.getById(id);
     if (user === null) {
       throw new BadRequestException('User not founded');
@@ -144,7 +144,7 @@ export class UsersService {
 
   async updatePassword(
     id: string,
-    updateInput: UpdatePasswordDto,
+    updateInput: UpdatePasswordInput,
   ): Promise<user_response> {
     const user = await this.getFullUserData(id);
     if (user === null) {

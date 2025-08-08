@@ -5,16 +5,16 @@ import {
 } from '@nestjs/common';
 import { DbService } from 'src/common/db/db.service';
 import {
-  CreateProductDto,
-  SearchProductDto,
-  UpdateProductDto,
-} from './dto/product.dto';
+  CreateProductInput,
+  SearchProductInput,
+  UpdateProductInput,
+} from './inputs/product.input';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly db: DbService) {}
 
-  async getAll(params: SearchProductDto) {
+  async getAll(params: SearchProductInput) {
     if (!params.org_id) {
       throw new BadRequestException('Organization not provided');
     }
@@ -32,7 +32,7 @@ export class ProductsService {
     });
   }
 
-  async create(org_id: string, data: CreateProductDto) {
+  async create(org_id: string, data: CreateProductInput) {
     return this.db.products.create({
       data: {
         ...data,
@@ -43,7 +43,7 @@ export class ProductsService {
     });
   }
 
-  async update(org_id: string, data: UpdateProductDto) {
+  async update(org_id: string, data: UpdateProductInput) {
     const { id, code, ...rest } = data;
     const product = await this.db.products.findUnique({
       where: {

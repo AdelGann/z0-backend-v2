@@ -10,7 +10,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Money } from 'generated/prisma';
 
-export class SearchProductDto {
+export class SearchProductInput {
   @ApiProperty({
     description: 'Organization ID',
     example: '123456789',
@@ -39,7 +39,7 @@ export class SearchProductDto {
   avalaible?: boolean;
 }
 
-export class CreateProductDto {
+export class CreateProductInput {
   @ApiProperty({
     description: 'Product code',
     example: 'PT-150512',
@@ -80,7 +80,7 @@ export class CreateProductDto {
   @IsEnum([Money])
   money_type!: Money;
 }
-export class UpdateProductDto extends CreateProductDto {
+export class UpdateProductInput extends CreateProductInput {
   @ApiProperty({
     description: 'Product ID',
     example: '123456789',

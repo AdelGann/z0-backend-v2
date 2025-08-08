@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEmail, MinLength, IsStrongPassword } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateUserInput {
   @ApiProperty({
     description: 'User full name',
     example: 'John Doe',
@@ -36,7 +36,7 @@ export class CreateUserDto {
 }
 
 // User can only update full_name, email and his username
-export class UpdateUserDto {
+export class UpdateUserInput {
   @ApiProperty({
     description: 'User full name',
     example: 'John Doe',
@@ -64,7 +64,7 @@ export class UpdateUserDto {
   email?: string;
 }
 
-export class UpdatePasswordDto {
+export class UpdatePasswordInput {
   @ApiProperty({
     description: 'New user password',
     example: 'NewPassword123!',

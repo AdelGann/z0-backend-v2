@@ -3,7 +3,7 @@ import { IsString, MinLength } from 'class-validator';
 
 // METODO Para actualizar y crear organizaciones
 
-export class CreateOrgDto {
+export class CreateOrgInput {
   @ApiProperty({
     description: 'Organization name',
     example: 'Organization name',
@@ -13,7 +13,7 @@ export class CreateOrgDto {
   name!: string;
 }
 
-export class UpdateOrgDto extends CreateOrgDto {
+export class UpdateOrgInput extends CreateOrgInput {
   @ApiProperty({
     description: 'Organization ID',
     example: 'org_id',
@@ -22,4 +22,4 @@ export class UpdateOrgDto extends CreateOrgDto {
   id!: string;
 }
 
-export class SelectOrgDto extends UpdateOrgDto {}
+export class SelectOrgInput extends UpdateOrgInput {}
