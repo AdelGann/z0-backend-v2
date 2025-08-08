@@ -109,6 +109,7 @@ model employees {
   debts      debts[]
   incomes    incomes[]
   clients    clients[] @relation("client_employee_rl", fields: [], references: [])
+  status     Status    @default(ACTIVE)
 
   @@unique([org_id, user_id], map: "unique_org_user")
   @@index([org_id], map: "idx_org_employees_org_id")
@@ -134,19 +135,20 @@ model incomes {
 }
 
 model orders {
-  id           String      @id @unique @default(uuid())
-  org_id       String
-  client_id    String
-  employee_id  String
-  total_amount Float?
-  payment_type PaymentType
-  money_type   Money
-  created_at   DateTime?   @default(now())
-  updated_at   DateTime?   @updatedAt
-  employee     employees   @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_employee")
-  clients      clients     @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_client")
-  orgs         orgs        @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_org")
-  products     products[]
+  id             String        @id @unique @default(uuid())
+  org_id         String
+  client_id      String
+  employee_id    String
+  total_amount   Float?
+  payment_type   PaymentType
+  money_type     Money
+  created_at     DateTime?     @default(now())
+  updated_at     DateTime?     @updatedAt
+  employee       employees     @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_employee")
+  clients        clients       @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_client")
+  orgs           orgs          @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_org")
+  products       products[]
+  payment_status PaymentStatus @default(PENDING)
 
   @@unique([org_id, client_id], map: "unique_org_client_order")
   @@index([org_id], map: "idx_org_orders_org_id")
@@ -183,6 +185,7 @@ model orgs {
   org_invitations  org_invitations[]
   users            users              @relation(fields: [founder_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_organizations")
   products         products[]
+  status           Status             @default(ACTIVE)
 
   @@unique([founder_id, id], map: "unique_org_founder")
 }
@@ -200,6 +203,7 @@ model products {
   order_id   String?   @unique
   orders     orders?   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_products")
   orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_products")
+  status     Status    @default(ACTIVE) 
 
   @@unique([org_id, id, code], map: "unique_org_product_code")
   @@unique([org_id, id], map: "unique_org_product")
@@ -223,4 +227,5 @@ model users {
   employees       employees[]
   org_invitations org_invitations[]
   orgs            orgs[]
+  status          Status            @default(ACTIVE)
 }
