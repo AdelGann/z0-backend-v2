@@ -33,6 +33,19 @@ export class ProductsService {
     });
   }
 
+  async getAllInStock(params: SearchProductInput) {
+    return await this.db.products.findMany({
+      where: {
+        org_id: params.org_id,
+        name: params?.name || undefined,
+        code: params?.code || undefined,
+        quantity: {
+          gt: 0,
+        },
+      },
+    });
+  }
+
   async create(org_id: string, data: CreateProductInput) {
     return this.db.products.create({
       data: {
@@ -85,7 +98,7 @@ export class ProductsService {
     if (product === null) {
       throw new NotFoundException('Product not founded');
     }
-    return this.db.products.delete({
+    return await this.db.products.delete({
       where: {
         org_id: product.org_id,
         id: product.id,

@@ -49,6 +49,23 @@ export class ProductsController {
     return this.productsService.getAll(params);
   }
 
+  @Get('in-stock')
+  @ApiOperation({
+    summary: 'Get all products in stock',
+    description: 'Get all products in stock',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all products in stock',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Forbbiden Resource',
+  })
+  getAllInStock(@Query() params: SearchProductInput) {
+    return this.productsService.getAllInStock(params);
+  }
+
   @Post()
   @ApiOperation({
     description: 'create a new product',
