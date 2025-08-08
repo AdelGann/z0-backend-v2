@@ -8,7 +8,7 @@ import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { JWT_DTO } from './interfaces/Jwt_Response.interface';
 import { UsersService } from 'src/users/users.service';
-import { LoginDto, RegisterDto } from './dtos/auth.dto';
+import { LoginInput, RegisterInput } from './inputs/auth.input';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async Login(credentials: LoginDto): Promise<JWT_DTO> {
+  async Login(credentials: LoginInput): Promise<JWT_DTO> {
     const { email, password } = credentials;
 
     const user = await this.usersService.getByEmail(email);
@@ -39,11 +39,11 @@ export class AuthService {
       }),
     };
   }
-  async Register(data: RegisterDto): Promise<JWT_DTO> {
+  async Register(data: RegisterInput): Promise<JWT_DTO> {
     const { email, full_name, password, user_name } = data;
     const isValidUserName = await this.usersService.getByUserName(user_name);
     const isValidEmail = await this.usersService.getByEmail(email);
-    
+
     if (isValidEmail !== null) {
       throw new BadRequestException('Email already taken');
     }

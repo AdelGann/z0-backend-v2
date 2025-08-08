@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto } from './dtos/auth.dto';
+import { LoginInput, RegisterInput } from './inputs/auth.input';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -24,7 +24,7 @@ export class AuthController {
     status: 201,
     description: 'Logged in succesfully',
   })
-  login(@Body() credentials: LoginDto) {
+  login(@Body() credentials: LoginInput) {
     return this.auth.Login(credentials);
   }
 
@@ -48,7 +48,7 @@ export class AuthController {
     status: 201,
     description: 'User registered succesfully',
   })
-  register(@Body() data: RegisterDto) {
+  register(@Body() data: RegisterInput) {
     return this.auth.Register(data);
   }
 }
