@@ -57,8 +57,8 @@ export class CreateDebtInput {
     description: 'Money type',
     enum: Money,
     required: true,
-    default: Money.Bs,
-    example: Money.Bs,
+    default: Money.BS,
+    example: Money.BS,
   })
   @IsNotEmpty()
   @IsEnum(Money)
