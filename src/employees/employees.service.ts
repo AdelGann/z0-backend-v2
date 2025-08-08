@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { employees } from 'generated/prisma';
 import { DbService } from 'src/common/db/db.service';
-import { EmployeeDto } from './inputs/employees.input';
+import { EmployeeInput } from './inputs/employees.input';
 
 @Injectable()
 export class EmployeesService {
@@ -20,7 +20,7 @@ export class EmployeesService {
   }
 
   //TODO: Agregar decorador para validar si el usuario que está realizando la operacion tiene permisos
-  async create(user_id: string, employee: EmployeeDto): Promise<employees> {
+  async create(user_id: string, employee: EmployeeInput): Promise<employees> {
     return this.dbService.employees.create({
       data: {
         user_id: user_id,
@@ -35,7 +35,7 @@ export class EmployeesService {
 
   //TODO: Agregar decorador para validar si el usuario que está realizando la operacion tiene permisos
   //TODO: Agregar validaciones en caso se agregue un usuario o id de organización no existente
-  async update(user_id: string, employee: EmployeeDto): Promise<employees> {
+  async update(user_id: string, employee: EmployeeInput): Promise<employees> {
     return this.dbService.employees.update({
       where: {
         org_id_user_id: {
