@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { employees } from 'generated/prisma';
 import { DbService } from 'src/common/db/db.service';
-import { EmployeeInput } from './inputs/employees.input';
+import { DeleteEmployeeInput, EmployeeInput } from './inputs/employees.input';
 
 @Injectable()
 export class EmployeesService {
@@ -15,6 +15,20 @@ export class EmployeesService {
     return this.dbService.employees.findMany({
       where: {
         org_id,
+      },
+      omit: {
+        org_id: true,
+        user_id: true,
+      },
+      include: {
+        users: {
+          omit: {
+            id: true,
+            password: true,
+            email: true,
+            role: true,
+          },
+        },
       },
     });
   }
@@ -55,16 +69,16 @@ export class EmployeesService {
   // administrador tratando de eliminar a un fundador
   // administrador tratando de eliminar a otro administrador
   async remove(
-    org_id: string,
-    user_id: string,
+    params: DeleteEmployeeInput,
     admin_id: string,
   ): Promise<employees> {
-    if (user_id === admin_id) {
-      throw new ForbiddenException('You cannot delete an yourself dumbass');
+    const { org_id, employee_id } = params;
+    if (employee_id === admin_id) {
+      throw new ForbiddenException('You cannot delete yourself dumbass');
     }
     const employee = await this.dbService.employees.findFirst({
       where: {
-        user_id,
+        id: employee_id,
       },
     });
     const admin = (await this.dbService.employees.findFirst({
@@ -81,7 +95,7 @@ export class EmployeesService {
     return this.dbService.employees.delete({
       where: {
         org_id_user_id: {
-          user_id,
+          user_id: employee.user_id,
           org_id,
         },
       },

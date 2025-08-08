@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -8,7 +8,7 @@ import {
 import { EmployeesService } from './employees.service';
 import { Auth, CurrentUser } from '../auth/decorators';
 import { ValidateMember } from './decorators/member.decorator';
-import { EmployeeInput } from './inputs/employees.input'; 
+import { DeleteEmployeeInput, EmployeeInput } from './inputs/employees.input';
 import { Roles, users } from 'generated/prisma';
 import { MemberRoles } from './decorators/role.decorator';
 
@@ -35,7 +35,7 @@ export class EmployeesController {
   @ApiResponse({ status: 404, description: 'Org not founded' })
   @ApiResponse({ status: 404, description: 'Employee not found' })
   @ApiResponse({ status: 401, description: 'Forbbiden' })
-  updateMember(@CurrentUser() user: users, employee: EmployeeInput) {
+  updateMember(@CurrentUser() user: users, @Body() employee: EmployeeInput) {
     return this.memberService.update(user.id, employee);
   }
 
@@ -47,8 +47,8 @@ export class EmployeesController {
   @MemberRoles(Roles.ADMIN)
   removeMember(
     @CurrentUser() user: users,
-    @Query() { user_id, org_id }: { user_id: string; org_id: string },
+    @Query() params: DeleteEmployeeInput,
   ) {
-    return this.memberService.remove(org_id, user_id, user.id);
+    return this.memberService.remove(params, user.id);
   }
 }

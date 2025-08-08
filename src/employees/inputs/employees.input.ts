@@ -34,3 +34,20 @@ export class EmployeeInput {
   @IsEnum(Roles)
   role!: Roles;
 }
+
+export class DeleteEmployeeInput {
+  @ApiProperty({
+    description: 'Org ID',
+    example: 'org_id',
+  })
+  @IsString()
+  @IsUUID()
+  org_id!: string;
+
+  @ApiProperty({
+    description: 'employee ID',
+    example: 'employee_id',
+  })
+  @IsUUID()
+  employee_id: string;
+}
