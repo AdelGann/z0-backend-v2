@@ -6,6 +6,7 @@ import {
 import { DbService } from 'src/common/db/db.service';
 import {
   CreateProductInput,
+  DeleteProductInput,
   SearchProductInput,
   UpdateProductInput,
 } from './inputs/product.input';
@@ -23,7 +24,7 @@ export class ProductsService {
         org_id: params.org_id,
         name: params?.name || undefined,
         code: params?.code || undefined,
-        ...(params?.avalaible && {
+        ...(params?.avalaible === 'true' && {
           quantity: {
             gt: 0,
           },
@@ -71,7 +72,8 @@ export class ProductsService {
     });
   }
 
-  async delete(org_id: string, id: string) {
+  async delete(params: DeleteProductInput) {
+    const { org_id, product_id: id } = params;
     const product = await this.db.products.findUnique({
       where: {
         org_id_id: {

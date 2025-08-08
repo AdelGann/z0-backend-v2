@@ -19,6 +19,7 @@ import { MemberRoles } from 'src/employees/decorators/role.decorator';
 import { ProductsService } from './products.service';
 import {
   CreateProductInput,
+  DeleteProductInput,
   SearchProductInput,
   UpdateProductInput,
 } from './inputs/product.input';
@@ -44,7 +45,7 @@ export class ProductsController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  getAll(@Query(`search`) params: SearchProductInput) {
+  getAll(@Query() params: SearchProductInput) {
     return this.productsService.getAll(params);
   }
 
@@ -95,7 +96,7 @@ export class ProductsController {
     description: 'Forbbiden Resource',
   })
   @MemberRoles(Roles.ADMIN)
-  delete(@Query('params') params: { org_id: string; product_id: string }) {
-    return this.productsService.delete(params.org_id, params.product_id);
+  delete(@Query() params: DeleteProductInput) {
+    return this.productsService.delete(params);
   }
 }
