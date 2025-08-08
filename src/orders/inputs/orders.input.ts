@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsPositive,
   IsUUID,
@@ -58,6 +59,23 @@ export class CreateOrderInput {
   })
   @IsPositive()
   total_amount!: number;
+}
+
+export class CreateOrderItems {
+  @ApiProperty({
+    description: 'Organization ID',
+    example: '123456789',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  org_id: string;
+
+  @ApiProperty({
+    description: 'order ID',
+    example: '1512-1258-1258',
+  })
+  @IsUUID()
+  id!: string;
 
   @ApiProperty({
     description: 'Lista de productos con cantidad',
@@ -69,6 +87,14 @@ export class CreateOrderInput {
 }
 
 export class UpdateOrderStatusInput {
+  @ApiProperty({
+    description: 'Organization ID',
+    example: '123456789',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  org_id: string;
+
   @ApiProperty({
     description: 'Order ID',
     example: '1512-1258-1258',
@@ -82,7 +108,7 @@ export class UpdateOrderStatusInput {
     enum: PaymentStatus,
   })
   @IsEnum(PaymentStatus)
-  status!: PaymentStatus;
+  payment_status!: PaymentStatus;
 }
 
 export class SearchOrdersInput {
@@ -120,5 +146,22 @@ export class SearchOrdersInput {
     enum: PaymentStatus,
   })
   @IsEnum(PaymentStatus)
-  status?: PaymentStatus;
+  payment_status?: PaymentStatus;
+}
+export class SearchProductInput {
+  @ApiProperty({
+    description: 'Order ID',
+    example: '123456789',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  order_id: string;
+
+  @ApiProperty({
+    description: 'Organization ID',
+    example: '123456789',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  org_id: string;
 }
