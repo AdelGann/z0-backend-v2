@@ -49,7 +49,7 @@ export class ClientsController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  getAll(@Query('params') params: SearchClientsInput) {
+  getAll(@Query() params: SearchClientsInput) {
     return this.clientsService.getAll(params);
   }
 
@@ -68,7 +68,7 @@ export class ClientsController {
   })
   getAllByEmployee(
     @CurrentUser() user: user_response,
-    @Query('params') params: SearchClientsForEmployeesInput,
+    @Query() params: SearchClientsForEmployeesInput,
   ) {
     return this.clientsService.getAllByEmployee(user.id, params);
   }
@@ -123,7 +123,7 @@ export class ClientsController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  delete(@Query('params') params: DeleteClientInput) {
+  delete(@Query() params: DeleteClientInput) {
     return this.clientsService.delete(params);
   }
 }

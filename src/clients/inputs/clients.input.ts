@@ -71,13 +71,16 @@ export class SearchClientsInput {
   @ApiProperty({
     description: 'Client name',
     example: 'John Doe',
+    required: false,
   })
+  @IsOptional()
   @IsString()
   name?: string;
 
   @ApiProperty({
     description: 'Client email',
     example: 'john@example.com',
+    required: false,
   })
   @IsEmail()
   @IsOptional()
@@ -86,13 +89,15 @@ export class SearchClientsInput {
   @ApiProperty({
     description: 'Client phone number',
     example: '+5698989898',
+    required: false,
   })
   @IsOptional()
   phone_number?: string;
 
   @ApiProperty({
     description: 'Client org id',
-    example: '1512-1258-1258',
+    example: 'e8925efc-62de-47a9-8537-7313363f5f71',
+    required: true,
   })
   @IsUUID()
   org_id!: string;
@@ -100,8 +105,10 @@ export class SearchClientsInput {
   @ApiProperty({
     description: 'Client employee id',
     example: '1512-1258-1258',
+    required: false,
   })
   @IsUUID()
+  @IsOptional()
   employee_id?: string;
 }
 
@@ -111,7 +118,8 @@ export class SearchClientsForEmployeesInput extends PickType(
 ) {
   @ApiProperty({
     description: 'Client org id',
-    example: '1512-1258-1258',
+    example: 'e8925efc-62de-47a9-8537-7313363f5f71',
+    required: true,
   })
   @IsUUID()
   org_id: string;
@@ -119,6 +127,7 @@ export class SearchClientsForEmployeesInput extends PickType(
   @ApiProperty({
     description: 'Client employee id',
     example: '1512-1258-1258',
+    required: true,
   })
   @IsUUID()
   employee_id: string;
@@ -134,7 +143,7 @@ export class DeleteClientInput {
 
   @ApiProperty({
     description: 'Client org id',
-    example: '1512-1258-1258',
+    example: 'e8925efc-62de-47a9-8537-7313363f5f71',
   })
   @IsUUID()
   org_id: string;
