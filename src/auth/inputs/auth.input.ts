@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsStrongPassword, IsString } from 'class-validator';
-import { CreateUserDto } from 'src/users/inputs/user.input';
+import { CreateUserInput } from 'src/users/inputs/user.input';
 
 export class LoginInput {
   @ApiProperty({
@@ -17,7 +17,7 @@ export class LoginInput {
   @IsString()
   password!: string;
 }
-export class RegisterInput extends CreateUserDto {
+export class RegisterInput extends CreateUserInput {
   @ApiProperty({
     description: 'Validate Password',
     example: 'Strong_Password@15025',
