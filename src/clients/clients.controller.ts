@@ -110,7 +110,6 @@ export class ClientsController {
   }
 
   @Delete()
-  @MemberRoles(Roles.ADMIN)
   @ApiOperation({ summary: 'Delete a client' })
   @ApiResponse({
     status: 200,
