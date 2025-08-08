@@ -125,18 +125,6 @@ model incomes {
   @@index([employee_id, org_id], map: "idx_incomes_employee_id_org_id")
 }
 
-model metrics {
-  id           String @id @unique @default(uuid())
-  month        BigInt
-  year         BigInt
-  total_income Float  @default(0)
-  total_debts  Float  @default(0)
-  income_count BigInt @default(0)
-  debt_count   BigInt @default(0)
-  org_id       String @unique()
-  orgs         orgs   @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_metrics")
-}
-
 model orders {
   id           String      @id @unique @default(uuid())
   org_id       String
@@ -183,7 +171,6 @@ model orgs {
   debts            debts[]
   employees        employees[]
   incomes          incomes[]
-  metrics          metrics?
   orders           orders[]
   org_invitations  org_invitations[]
   users            users              @relation(fields: [founder_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_organizations")
