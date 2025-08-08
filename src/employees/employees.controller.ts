@@ -8,7 +8,7 @@ import {
 import { EmployeesService } from './employees.service';
 import { Auth, CurrentUser } from '../auth/decorators';
 import { ValidateMember } from './decorators/member.decorator';
-import { EmployeeDto } from './dto/employees.dto';
+import { EmployeeInput } from './inputs/employees.input'; 
 import { Roles, users } from 'generated/prisma';
 import { MemberRoles } from './decorators/role.decorator';
 
@@ -35,7 +35,7 @@ export class EmployeesController {
   @ApiResponse({ status: 404, description: 'Org not founded' })
   @ApiResponse({ status: 404, description: 'Employee not found' })
   @ApiResponse({ status: 401, description: 'Forbbiden' })
-  updateMember(@CurrentUser() user: users, employee: EmployeeDto) {
+  updateMember(@CurrentUser() user: users, employee: EmployeeInput) {
     return this.memberService.update(user.id, employee);
   }
 

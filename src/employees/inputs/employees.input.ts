@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Roles } from 'generated/prisma';
 
-export class EmployeeDto {
+export class EmployeeInput {
   @ApiProperty({
     description: 'Org ID',
     example: 'org_id',

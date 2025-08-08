@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { employees } from 'generated/prisma';
 import { DbService } from 'src/common/db/db.service';
-import { EmployeeDto } from './dto/employees.dto';
+import { EmployeeDto } from './inputs/employees.input';
 
 @Injectable()
 export class EmployeesService {
