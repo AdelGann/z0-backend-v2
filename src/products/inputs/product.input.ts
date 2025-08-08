@@ -4,11 +4,23 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsPositive,
   IsString,
   IsUUID,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Money } from 'generated/prisma';
+
+export class OrderProductInput {
+  @ApiProperty({ description: 'Product ID' })
+  @IsUUID()
+  product_id!: string;
+
+  @ApiProperty({ description: 'Quantity' })
+  @IsNumber()
+  @IsPositive()
+  quantity!: number;
+}
 
 export class SearchProductInput {
   @ApiProperty({
