@@ -8,10 +8,10 @@ import {
 import { Auth } from 'src/auth/decorators';
 import { ValidateMember } from 'src/employees/decorators/member.decorator';
 import {
-  CreateIncomeDto,
-  SearchParamsDto,
-  UpdateIncomeStatusDto,
-} from './dto/incomes.dto';
+  CreateIncomeInput,
+  SearchParamsInput,
+  UpdateIncomeStatusInput,
+} from './inputs/incomes.input';
 import { IncomesService } from './incomes.service';
 
 @Auth()
@@ -35,7 +35,7 @@ export class IncomesController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  getAll(@Query() params: SearchParamsDto) {
+  getAll(@Query() params: SearchParamsInput) {
     return this.incomesService.getAll(params);
   }
 
@@ -52,7 +52,10 @@ export class IncomesController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  post(@Query('org_id') org_id: string, @Body() createIncome: CreateIncomeDto) {
+  post(
+    @Query('org_id') org_id: string,
+    @Body() createIncome: CreateIncomeInput,
+  ) {
     return this.incomesService.create(org_id, createIncome);
   }
 
@@ -69,7 +72,7 @@ export class IncomesController {
     status: 401,
     description: 'Forbbiden Resource',
   })
-  updateStatus(@Body() updateIncomeStatus: UpdateIncomeStatusDto) {
+  updateStatus(@Body() updateIncomeStatus: UpdateIncomeStatusInput) {
     return this.incomesService.updateStatus(updateIncomeStatus);
   }
 }
