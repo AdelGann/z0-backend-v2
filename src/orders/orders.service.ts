@@ -73,7 +73,7 @@ export class OrdersService {
         throw new NotFoundException('Product not found');
       }
 
-      const final_quantity = products.quantity - BigInt(order_item.quantity);
+      const final_quantity = products.quantity - order_item.quantity;
 
       if (final_quantity < 0) {
         throw new NotFoundException('Not enough quantity');

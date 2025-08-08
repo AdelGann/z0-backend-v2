@@ -36,7 +36,7 @@ export class CreateOrderInput {
 
   @ApiProperty({
     description: 'Money Type',
-    example: 'Bs',
+    example: Money.BS,
     enum: Money,
   })
   @IsEnum(Money)
@@ -122,6 +122,7 @@ export class SearchOrdersInput {
   @ApiProperty({
     description: 'Client ID',
     example: '1512-1258-1258',
+    required: false,
   })
   @IsUUID()
   client_id?: string;
@@ -129,6 +130,7 @@ export class SearchOrdersInput {
   @ApiProperty({
     description: 'Order ID',
     example: '1512-1258-1258',
+    required: false,
   })
   @IsUUID()
   id?: string;
@@ -136,6 +138,7 @@ export class SearchOrdersInput {
   @ApiProperty({
     description: 'Employee ID',
     example: '1512-1258-1258',
+    required: false,
   })
   @IsUUID()
   employee_id?: string;
@@ -144,6 +147,7 @@ export class SearchOrdersInput {
     description: 'order status',
     example: PaymentStatus.PAID,
     enum: PaymentStatus,
+    required: false,
   })
   @IsEnum(PaymentStatus)
   payment_status?: PaymentStatus;

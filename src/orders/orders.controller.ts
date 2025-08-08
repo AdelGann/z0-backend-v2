@@ -34,7 +34,7 @@ export class OrdersController {
     description: 'Orders',
     type: String,
   })
-  getAll(@Query('params') params: SearchOrdersInput) {
+  getAll(@Query() params: SearchOrdersInput) {
     return this.ordersService.getAll(params);
   }
 
@@ -53,7 +53,7 @@ export class OrdersController {
     description: 'Order not found',
     type: String,
   })
-  getAllItems(@Query('params') params: SearchProductInput) {
+  getAllItems(@Query() params: SearchProductInput) {
     return this.ordersService.getAllProducts(params);
   }
 
