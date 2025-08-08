@@ -54,15 +54,17 @@ model client_feedbacks {
 model clients {
   id               String             @id @unique @default(uuid())
   org_id           String
+  employee_id      String?
   doc_num          String             @unique
+  email            String             @unique
+  phone_number     String?            @unique
   full_name        String
   created_at       DateTime?          @default(now())
   updated_at       DateTime?          @updatedAt
   client_feedbacks client_feedbacks[]
   orgs             orgs               @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_clients")
   orders           orders[]
-  employees        employees?         @relation("client_employee_rl", fields: [employeesId], references: [id])
-  employeesId      String?
+  employees        employees?         @relation("client_employee_rl", fields: [employee_id], references: [id])
 
   @@unique([org_id, doc_num], map: "unique_org_client")
   @@index([org_id], map: "idx_org_clients_org_id")
