@@ -38,6 +38,11 @@ enum PaymentStatus {
   PAID
 }
 
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
 model client_feedbacks {
   id         String    @id @unique @default(uuid())
   client_id  String
@@ -65,6 +70,7 @@ model clients {
   orgs             orgs               @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_clients")
   orders           orders[]
   employees        employees?         @relation("client_employee_rl", fields: [employee_id], references: [id])
+  status           Status             @default(ACTIVE)
 
   @@unique([org_id, doc_num], map: "unique_org_client")
   @@index([org_id], map: "idx_org_clients_org_id")
