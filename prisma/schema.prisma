@@ -147,12 +147,26 @@ model orders {
   employee       employees     @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_employee")
   clients        clients       @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_client")
   orgs           orgs          @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_org")
-  products       products[]
+  order_items    order_items[]
   payment_status PaymentStatus @default(PENDING)
 
   @@unique([org_id, client_id], map: "unique_org_client_order")
   @@index([org_id], map: "idx_org_orders_org_id")
   @@index([client_id], map: "idx_org_orders_client_id")
+}
+
+model order_items {
+  id         String   @id @default(uuid())
+  order_id   String
+  product_id String
+  quantity   Int
+  created_at DateTime @default(now())
+  orders     orders   @relation(fields: [order_id], references: [id], onDelete: Cascade, map: "fk_order_items_order")
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, map: "fk_order_items_product")
+
+  @@unique([order_id, product_id], map: "unique_order_product")
+  @@index([order_id], map: "idx_order_items_order_id")
+  @@index([product_id], map: "idx_order_items_product_id")
 }
 
 model org_invitations {
@@ -191,19 +205,18 @@ model orgs {
 }
 
 model products {
-  id         String    @id @unique @default(uuid())
-  org_id     String
-  name       String
-  code       String
-  quantity   BigInt?
-  price      Float?
-  money_type Money?
-  created_at DateTime? @default(now())
-  update_at  DateTime? @updatedAt
-  order_id   String?   @unique
-  orders     orders?   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_products")
-  orgs       orgs      @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_products")
-  status     Status    @default(ACTIVE) 
+  id          String        @id @unique @default(uuid())
+  org_id      String
+  name        String
+  code        String
+  quantity    BigInt?
+  price       Float?
+  money_type  Money?
+  created_at  DateTime?     @default(now())
+  update_at   DateTime?     @updatedAt
+  orgs        orgs          @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_products")
+  status      Status        @default(ACTIVE)
+  order_items order_items[]
 
   @@unique([org_id, id, code], map: "unique_org_product_code")
   @@unique([org_id, id], map: "unique_org_product")
