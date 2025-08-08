@@ -23,8 +23,7 @@ import {
 import { UsersService } from './users.service';
 import { user_response } from 'src/users/interfaces/user.interface';
 import { Auth, AuthRoles, CurrentUser } from '../auth/decorators';
-import { token_payload } from '../auth/interfaces/Token_Payload.interface';
-import { Roles } from 'generated/prisma';
+import { Roles, users } from 'generated/prisma';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -67,10 +66,8 @@ export class UsersController {
     type: CreateUserInput,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async findOne(
-    @CurrentUser() user: token_payload,
-  ): Promise<user_response | null> {
-    return await this.service.getById(user.sub);
+  async findOne(@CurrentUser() user: users): Promise<user_response | null> {
+    return await this.service.getById(user.id);
   }
 
   @Patch()
@@ -81,11 +78,8 @@ export class UsersController {
     type: UpdateUserInput,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  update(
-    @CurrentUser() user: token_payload,
-    @Body() updateUserInput: UpdateUserInput,
-  ) {
-    return this.service.update(user.sub, updateUserInput);
+  update(@CurrentUser() user: users, @Body() updateUserInput: UpdateUserInput) {
+    return this.service.update(user.id, updateUserInput);
   }
 
   @Patch('restore-password')
@@ -97,10 +91,10 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   updatePassword(
-    @CurrentUser() user: token_payload,
+    @CurrentUser() user: users,
     @Body() updatePasswordInput: UpdatePasswordInput,
   ) {
-    return this.service.updatePassword(user.sub, updatePasswordInput);
+    return this.service.updatePassword(user.id, updatePasswordInput);
   }
 
   @Delete('delete-account')
@@ -108,8 +102,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 204, description: 'User successfully deleted' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  remove(@CurrentUser() user: token_payload) {
-    return this.service.delete(user.sub);
+  remove(@CurrentUser() user: users) {
+    return this.service.delete(user.id);
   }
 
   @Delete('delete-account/:id')
