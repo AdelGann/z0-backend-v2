@@ -159,7 +159,7 @@ model order_items {
   id         String   @id @default(uuid())
   order_id   String
   product_id String
-  quantity   Int
+  quantity   BigInt
   created_at DateTime @default(now())
   orders     orders   @relation(fields: [order_id], references: [id], onDelete: Cascade, map: "fk_order_items_order")
   products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, map: "fk_order_items_product")
@@ -209,9 +209,9 @@ model products {
   org_id      String
   name        String
   code        String
-  quantity    BigInt?
-  price       Float?
-  money_type  Money?
+  quantity    BigInt
+  price       Float
+  money_type  Money
   created_at  DateTime?     @default(now())
   update_at   DateTime?     @updatedAt
   orgs        orgs          @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_products")
