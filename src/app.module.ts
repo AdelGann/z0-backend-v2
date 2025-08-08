@@ -11,8 +11,6 @@ import { ClientsModule } from './clients/clients.module';
 import { DebtsModule } from './debts/debts.module';
 import { IncomesModule } from './incomes/incomes.module';
 import { OrdersModule } from './orders/orders.module';
-import { MetricsModule } from './metrics/metrics.module';
-
 @Module({
   imports: [
     configModule,
@@ -27,7 +25,6 @@ import { MetricsModule } from './metrics/metrics.module';
     DebtsModule,
     IncomesModule,
     OrdersModule,
-    MetricsModule,
   ],
 })
 export class AppModule {}
