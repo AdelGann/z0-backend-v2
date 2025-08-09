@@ -47,7 +47,7 @@ model client_feedbacks {
   id         String    @id @unique @default(uuid())
   client_id  String
   org_id     String
-  rating     BigInt
+  rating     Int
   comment    String
   created_at DateTime? @default(now())
   clients    clients   @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_clients_feedbacks")
