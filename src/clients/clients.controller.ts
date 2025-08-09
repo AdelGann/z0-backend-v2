@@ -19,8 +19,10 @@ import { MemberRoles } from 'src/employees/decorators/role.decorator';
 import { ClientsService } from './clients.service';
 import { Roles } from 'generated/prisma';
 import {
+  ClientFeedBackInput,
   CreateClientInput,
   DeleteClientInput,
+  SearchClientFeedBackInput,
   SearchClientsForEmployeesInput,
   SearchClientsInput,
   UpdateClientInput,
@@ -28,7 +30,6 @@ import {
 import { user_response } from 'src/users/interfaces/user.interface';
 
 @Auth()
-@ValidateMember()
 @ApiBearerAuth()
 @ApiTags('clients')
 @Controller('clients')
@@ -36,6 +37,7 @@ export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Get()
+  @ValidateMember()
   @MemberRoles(Roles.ADMIN)
   @ApiOperation({
     summary: 'Find all clients for admin',
@@ -53,7 +55,43 @@ export class ClientsController {
     return this.clientsService.getAll(params);
   }
 
+  @Get('/history')
+  @ApiOperation({
+    description: 'Find client history',
+    summary: 'Find client history',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Find client history',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Forbbiden Resource',
+  })
+  getClientHistory(@Query() params: SearchClientFeedBackInput) {
+    return this.clientsService.getClientHistory(params);
+  }
+
+  @Post('/feedback')
+  @ValidateMember()
+  @ApiOperation({
+    description: 'Create client feedback',
+    summary: 'Create client feedback',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Client feedback created',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Forbbiden Resource',
+  })
+  createClientFeedback(@Body() data: ClientFeedBackInput) {
+    return this.clientsService.createClientFeedback(data.client_id, data);
+  }
+
   @Get('/by-employee')
+  @ValidateMember()
   @ApiOperation({
     description: 'Find all clients for employee',
     summary: 'Find all clients for employee',
@@ -74,6 +112,7 @@ export class ClientsController {
   }
 
   @Post()
+  @ValidateMember()
   @ApiOperation({ summary: 'Create a new client' })
   @ApiResponse({
     status: 201,
@@ -92,6 +131,7 @@ export class ClientsController {
   }
 
   @Patch()
+  @ValidateMember()
   @ApiOperation({ summary: 'Update a client' })
   @ApiResponse({
     status: 200,
@@ -110,6 +150,7 @@ export class ClientsController {
   }
 
   @Delete()
+  @ValidateMember()
   @ApiOperation({ summary: 'Delete a client' })
   @ApiResponse({
     status: 200,

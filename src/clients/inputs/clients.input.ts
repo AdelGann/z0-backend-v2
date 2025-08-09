@@ -3,10 +3,13 @@ import { PickType } from '@nestjs/mapped-types';
 import {
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsPhoneNumber,
   IsString,
   IsUUID,
+  Max,
+  Min,
   MinLength,
 } from 'class-validator';
 
@@ -131,6 +134,76 @@ export class SearchClientsForEmployeesInput extends PickType(
   })
   @IsUUID()
   employee_id: string;
+}
+
+export class SearchClientFeedBackInput {
+  @ApiProperty({
+    description: 'Client ID',
+    example: '1512-1258-1258',
+    required: false,
+  })
+  @IsUUID()
+  @IsOptional()
+  client_id?: string;
+
+  @ApiProperty({
+    description: 'doc_num',
+    example: '123456789',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  doc_num?: string;
+
+  @ApiProperty({
+    description: 'email',
+    example: 'john@example.com',
+    required: false,
+  })
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @ApiProperty({
+    description: 'phone_number',
+    example: '+5698989898',
+    required: false,
+  })
+  @IsOptional()
+  @IsPhoneNumber('VE')
+  phone_number?: string;
+}
+
+export class ClientFeedBackInput {
+  @ApiProperty({
+    description: 'Client ID',
+    example: '1512-1258-1258',
+  })
+  @IsUUID()
+  client_id: string;
+
+  @ApiProperty({
+    description: 'Client org id',
+    example: 'e8925efc-62de-47a9-8537-7313363f5f71',
+  })
+  @IsUUID()
+  org_id: string;
+
+  @ApiProperty({
+    description: 'Rating',
+    example: 5,
+  })
+  @IsNumber()
+  @Min(1)
+  @Max(5)
+  rating: number;
+
+  @ApiProperty({
+    description: 'Comment',
+    example: 'This is a feedback',
+  })
+  @IsString()
+  comment: string;
 }
 
 export class DeleteClientInput {

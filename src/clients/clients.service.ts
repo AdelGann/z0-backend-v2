@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DbService } from 'src/common/db/db.service';
 import {
+  ClientFeedBackInput,
   CreateClientInput,
   DeleteClientInput,
+  SearchClientFeedBackInput,
   SearchClientsForEmployeesInput,
   SearchClientsInput,
   UpdateClientInput,
@@ -53,6 +55,37 @@ export class ClientsService {
       where: {
         org_id: params.org_id,
         employee_id: employee.id,
+      },
+    });
+  }
+
+  async getClientHistory(params?: SearchClientFeedBackInput) {
+    return this.dbService.clients.findFirstOrThrow({
+      where: {
+        ...(params && {
+          ...params,
+        }),
+      },
+      include: {
+        client_feedbacks: true,
+      },
+    });
+  }
+
+  async createClientFeedback(client_id: string, data: ClientFeedBackInput) {
+    const client = await this.dbService.clients.findFirst({
+      where: {
+        id: client_id,
+      },
+    });
+    if (client === null) {
+      throw new BadRequestException('Client not found');
+    }
+    return this.dbService.client_feedbacks.create({
+      data: {
+        ...data,
+        client_id,
+        org_id: client.org_id,
       },
     });
   }
