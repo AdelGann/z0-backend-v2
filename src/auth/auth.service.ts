@@ -41,8 +41,11 @@ export class AuthService {
   }
   async Register(data: RegisterInput): Promise<JWT_DTO> {
     const { email, full_name, password, user_name } = data;
-    const isValidUserName = await this.usersService.getByUserName(user_name);
-    const isValidEmail = await this.usersService.getByEmail(email);
+
+    const [isValidEmail, isValidUserName] = await Promise.all([
+      await this.usersService.getByEmail(email),
+      await this.usersService.getByUserName(user_name),
+    ]);
 
     if (isValidEmail !== null) {
       throw new BadRequestException('Email already taken');
